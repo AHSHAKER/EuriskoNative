@@ -3,6 +3,8 @@ import {View, Text, Image, ScrollView, StyleSheet} from 'react-native';
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {MainStackParamList} from '../../navigator/Types';
 import {products} from '../../data/Products';
+import ShareButton from '../../components/atoms/ShareButton';
+import AddToCartButton from '../../components/atoms/AddToCart';
 
 type ProductDetailsRouteProp = RouteProp<MainStackParamList, 'ProductDetails'>;
 
@@ -16,12 +18,19 @@ const ProductDetailsScreen = () => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image source={{uri: product.images[0]?.url}} style={styles.image} />
-      <Text style={styles.title}>{product.title}</Text>
-      <Text style={styles.price}>${product.price}</Text>
-      <Text style={styles.description}>{product.description}</Text>
-    </ScrollView>
+    <View style={{flex: 1}}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image source={{uri: product.images[0]?.url}} style={styles.image} />
+        <Text style={styles.title}>{product.title}</Text>
+        <Text style={styles.price}>${product.price}</Text>
+        <Text style={styles.description}>{product.description}</Text>
+      </ScrollView>
+
+      <View style={styles.buttonContainer}>
+        <ShareButton />
+        <AddToCartButton />
+      </View>
+    </View>
   );
 };
 
@@ -51,5 +60,14 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderColor: '#eee',
   },
 });

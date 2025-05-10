@@ -2,6 +2,7 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {Text, View} from 'react-native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import SignUpScreen from './src/screens/AuthScreens/SignUpScreen';
 
 function HomeScreen() {
   return (
@@ -16,7 +17,7 @@ const Stack = createNativeStackNavigator();
 function RootStack() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
     </Stack.Navigator>
   );
 }

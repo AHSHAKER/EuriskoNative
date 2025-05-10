@@ -3,6 +3,7 @@ import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {MainStackParamList} from '../../navigator/Types';
+import {useTheme} from '../../context/ThemeContext';
 
 type ProductItemProps = {
   id: string;
@@ -19,6 +20,8 @@ const ProductItem: React.FC<ProductItemProps> = ({
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<MainStackParamList>>();
+  const {dark} = useTheme();
+  const styles = createStyles(dark);
 
   return (
     <TouchableOpacity
@@ -35,33 +38,35 @@ const ProductItem: React.FC<ProductItemProps> = ({
 
 export default ProductItem;
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    marginHorizontal: 10,
-    marginVertical: 6,
-    borderRadius: 8,
-    padding: 10,
-    elevation: 2,
-    alignItems: 'center',
-  },
-  image: {
-    width: 80,
-    height: 80,
-    borderRadius: 6,
-    marginRight: 10,
-  },
-  info: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  price: {
-    fontSize: 14,
-    marginTop: 4,
-    color: '#333',
-  },
-});
+const createStyles = (dark: boolean) =>
+  StyleSheet.create({
+    card: {
+      flexDirection: 'row',
+      backgroundColor: dark ? '#333' : '#fff',
+      marginHorizontal: 10,
+      marginVertical: 6,
+      borderRadius: 8,
+      padding: 10,
+      elevation: 2,
+      alignItems: 'center',
+    },
+    image: {
+      width: 80,
+      height: 80,
+      borderRadius: 6,
+      marginRight: 10,
+    },
+    info: {
+      flex: 1,
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: dark ? '#fff' : '#000',
+    },
+    price: {
+      fontSize: 14,
+      marginTop: 4,
+      color: dark ? '#ccc' : '#333',
+    },
+  });

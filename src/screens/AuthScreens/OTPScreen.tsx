@@ -1,17 +1,20 @@
 import React, {useState} from 'react';
 import {
   View,
-  Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
 import {useAuth} from '../../context/AuthContext';
+import CustomText from '../../components/atoms/CustomText';
 
 type Navigation = NativeStackNavigationProp<AuthStackParamList, 'OTP'>;
+
+const {width, height} = Dimensions.get('window');
 
 const OTPScreen = () => {
   const navigation = useNavigation<Navigation>();
@@ -25,20 +28,19 @@ const OTPScreen = () => {
     const filtered = text.replace(/[^0-9]/g, '');
     if (filtered.length <= 4) {
       setOtp(filtered);
-      login();
     }
   };
 
   const handleVerify = () => {
     if (otp.length === 4) {
-      navigation.navigate('Done', {from: 'OTP'});
+      login();
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>OTP Verification</Text>
-      <Text style={styles.subtitle}>Verifying for: {from}</Text>
+      <CustomText style={styles.title}>OTP Verification</CustomText>
+      <CustomText style={styles.subtitle}>Verifying for: {from}</CustomText>
       <TextInput
         style={styles.input}
         placeholder="Enter 4-digit OTP"
@@ -51,7 +53,7 @@ const OTPScreen = () => {
         onPress={handleVerify}
         style={[styles.button, otp.length !== 4 && styles.buttonDisabled]}
         disabled={otp.length !== 4}>
-        <Text style={styles.buttonText}>Verify</Text>
+        <CustomText style={styles.buttonText}>Verify</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -63,29 +65,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: width * 0.06,
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 28,
+    fontSize: width * 0.07,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: height * 0.02,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: '#555',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: height * 0.03,
   },
   input: {
     borderWidth: 1,
     borderColor: '#aaa',
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 20,
-    fontSize: 18,
+    paddingHorizontal: width * 0.03,
+    paddingVertical: height * 0.015,
+    marginBottom: height * 0.025,
+    fontSize: width * 0.045,
     textAlign: 'center',
     backgroundColor: '#fff',
     color: '#333',
@@ -93,7 +95,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#007aff',
     borderRadius: 8,
-    paddingVertical: 14,
+    paddingVertical: height * 0.018,
     alignItems: 'center',
   },
   buttonDisabled: {
@@ -102,5 +104,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: width * 0.045,
   },
 });

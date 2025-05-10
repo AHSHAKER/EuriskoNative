@@ -1,9 +1,10 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {MainStackParamList} from '../../navigator/Types';
 import {useTheme} from '../../context/ThemeContext';
+import CustomText from '../atoms/CustomText';
 
 type ProductItemProps = {
   id: string;
@@ -29,8 +30,10 @@ const ProductItem: React.FC<ProductItemProps> = ({
       onPress={() => navigation.navigate('ProductDetails', {productId: id})}>
       <Image source={{uri: imageUrl}} style={styles.image} />
       <View style={styles.info}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.price}>${price}</Text>
+        <CustomText style={styles.title} weight="bold">
+          {title}
+        </CustomText>
+        <CustomText style={styles.price}>{`$${price}`}</CustomText>
       </View>
     </TouchableOpacity>
   );
@@ -61,7 +64,6 @@ const createStyles = (dark: boolean) =>
     },
     title: {
       fontSize: 16,
-      fontWeight: '600',
       color: dark ? '#fff' : '#000',
     },
     price: {

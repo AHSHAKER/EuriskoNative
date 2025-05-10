@@ -1,9 +1,17 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
 import LoginForm from '../../components/organisms/LoginForm';
+import CustomText from '../../components/atoms/CustomText';
+
+const {width, height} = Dimensions.get('window');
 
 type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
@@ -12,11 +20,11 @@ const LoginScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Log In</Text>
+      <CustomText style={styles.title}>Log In</CustomText>
       <LoginForm />
-      <Text style={styles.normalText}>Don't have an account?</Text>
+      <CustomText style={styles.normalText}>Don't have an account?</CustomText>
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.link}>Sign Up</Text>
+        <CustomText style={styles.link}>Sign Up</CustomText>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -28,26 +36,26 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 40,
+    paddingHorizontal: width * 0.06,
+    paddingVertical: height * 0.05,
     backgroundColor: '#f2f2f2',
   },
   title: {
-    fontSize: 28,
+    fontSize: width * 0.07,
     fontWeight: 'bold',
-    marginBottom: 32,
+    marginBottom: height * 0.04,
     textAlign: 'center',
     color: '#333',
   },
   link: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: '#007aff',
     textAlign: 'center',
   },
   normalText: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     textAlign: 'center',
-    marginTop: 24,
+    marginTop: height * 0.03,
     color: '#333',
   },
 });

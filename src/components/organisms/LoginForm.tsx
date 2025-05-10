@@ -1,11 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import {View, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {LoginSchema, LoginData} from '../../utils/schema';
@@ -13,6 +7,7 @@ import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
 import users from '../../data/Users.json';
+import CustomText from '../atoms/CustomText';
 
 type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
@@ -41,16 +36,14 @@ const LoginForm = () => {
     if (matchedUser) {
       navigation.navigate('OTP', {from: 'Login'});
     } else {
-      // Optionally display an error
       console.log('❌ Invalid credentials');
       setLoginError('Invalid email or password');
-      // You could also use state to show error in the UI
     }
   };
 
   return (
     <View>
-      <Text style={styles.label}>Email</Text>
+      <CustomText style={styles.label}>Email</CustomText>
       <TextInput
         placeholder="Email"
         keyboardType="email-address"
@@ -58,9 +51,11 @@ const LoginForm = () => {
         onChangeText={text => setValue('email', text)}
         {...register('email')}
       />
-      {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+      {errors.email && (
+        <CustomText style={styles.error}>{errors.email.message}</CustomText>
+      )}
 
-      <Text style={styles.label}>Password</Text>
+      <CustomText style={styles.label}>Password</CustomText>
       <TextInput
         placeholder="Password"
         secureTextEntry
@@ -69,13 +64,15 @@ const LoginForm = () => {
         {...register('password')}
       />
       {errors.password && (
-        <Text style={styles.error}>{errors.password.message}</Text>
+        <CustomText style={styles.error}>{errors.password.message}</CustomText>
       )}
 
-      {loginError !== '' && <Text style={styles.error}>{loginError}</Text>}
+      {loginError !== '' && (
+        <CustomText style={styles.error}>{loginError}</CustomText>
+      )}
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.buttonText}>Log In</Text>
+        <CustomText style={styles.buttonText}>Log In</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -102,7 +99,6 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
-    // marginBottom: 8,
     fontSize: 12,
   },
   button: {

@@ -3,28 +3,35 @@ import {
   FlatList,
   SafeAreaView,
   StyleSheet,
-  Text,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import ProductItem from '../../components/molecules/ProductItem';
 import {products} from '../../data/Products';
 import {useTheme} from '../../context/ThemeContext';
 import {useNavigation} from '@react-navigation/native';
+import CustomText from '../../components/atoms/CustomText';
+
+const {width, height} = Dimensions.get('window');
 
 const ProductListScreen = () => {
   const navigation = useNavigation();
   const {theme, toggleTheme} = useTheme();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
           onPress={toggleTheme}
           style={[styles.themeButton, {backgroundColor: theme.card}]}>
-          <Text style={[styles.themeIcon, {color: theme.text}]}>🌓</Text>
+          <CustomText style={[styles.themeIcon, {color: theme.text}]}>
+            🌓
+          </CustomText>
         </TouchableOpacity>
       ),
     });
   }, [navigation, toggleTheme, theme]);
+
   return (
     <SafeAreaView
       style={[styles.container, {backgroundColor: theme.background}]}>
@@ -39,7 +46,7 @@ const ProductListScreen = () => {
             imageUrl={item.images[0]?.url}
           />
         )}
-        contentContainerStyle={{paddingBottom: 20}}
+        contentContainerStyle={{paddingBottom: height * 0.02}}
       />
     </SafeAreaView>
   );
@@ -51,16 +58,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f2f2f2',
-    paddingTop: 10,
+    paddingTop: height * 0.01,
   },
   themeButton: {
-    padding: 8,
-    borderRadius: 20,
-    marginRight: 10,
+    padding: width * 0.02,
+    borderRadius: width * 0.05,
+    marginRight: width * 0.03,
     alignItems: 'center',
     justifyContent: 'center',
   },
   themeIcon: {
-    fontSize: 18,
+    fontSize: width * 0.045,
   },
 });

@@ -1,10 +1,13 @@
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {TouchableOpacity, StyleSheet} from 'react-native';
+import CustomText from '../atoms/CustomText';
 
 const ShareButton = () => {
   return (
     <TouchableOpacity style={styles.button}>
-      <Text style={styles.text}>Share</Text>
+      <CustomText style={styles.text} weight="bold">
+        Share
+      </CustomText>
     </TouchableOpacity>
   );
 };
@@ -26,6 +29,5 @@ const styles = StyleSheet.create({
   text: {
     marginLeft: 6,
     color: '#007aff',
-    fontWeight: '600',
   },
 });

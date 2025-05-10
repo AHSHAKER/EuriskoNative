@@ -1,17 +1,12 @@
 import React from 'react';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import {View, TextInput, StyleSheet, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SignUpSchema, SignUpData} from '../../utils/schema';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
+import CustomText from '../atoms/CustomText';
 
 const SignUpForm = () => {
   const {
@@ -33,16 +28,18 @@ const SignUpForm = () => {
 
   return (
     <View>
-      <Text style={styles.label}>Name</Text>
+      <CustomText style={styles.label}>Name</CustomText>
       <TextInput
         placeholder="Name"
         style={styles.input}
         onChangeText={text => setValue('name', text)}
         {...register('name')}
       />
-      {errors.name && <Text style={styles.error}>{errors.name.message}</Text>}
+      {errors.name && (
+        <CustomText style={styles.error}>{errors.name.message}</CustomText>
+      )}
 
-      <Text style={styles.label}>Email</Text>
+      <CustomText style={styles.label}>Email</CustomText>
       <TextInput
         placeholder="Email"
         keyboardType="email-address"
@@ -50,9 +47,11 @@ const SignUpForm = () => {
         onChangeText={text => setValue('email', text)}
         {...register('email')}
       />
-      {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+      {errors.email && (
+        <CustomText style={styles.error}>{errors.email.message}</CustomText>
+      )}
 
-      <Text style={styles.label}>Password</Text>
+      <CustomText style={styles.label}>Password</CustomText>
       <TextInput
         placeholder="Password"
         secureTextEntry
@@ -61,10 +60,10 @@ const SignUpForm = () => {
         {...register('password')}
       />
       {errors.password && (
-        <Text style={styles.error}>{errors.password.message}</Text>
+        <CustomText style={styles.error}>{errors.password.message}</CustomText>
       )}
 
-      <Text style={styles.label}>Phone Number</Text>
+      <CustomText style={styles.label}>Phone Number</CustomText>
       <TextInput
         placeholder="Phone Number"
         keyboardType="phone-pad"
@@ -72,10 +71,12 @@ const SignUpForm = () => {
         onChangeText={text => setValue('phone', text)}
         {...register('phone')}
       />
-      {errors.phone && <Text style={styles.error}>{errors.phone.message}</Text>}
+      {errors.phone && (
+        <CustomText style={styles.error}>{errors.phone.message}</CustomText>
+      )}
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+        <CustomText style={styles.buttonText}>Sign Up</CustomText>
       </TouchableOpacity>
     </View>
   );

@@ -11,6 +11,7 @@ const ProductListScreen = () => {
         keyExtractor={item => item._id}
         renderItem={({item}) => (
           <ProductItem
+            id={item._id}
             title={item.title}
             price={item.price}
             imageUrl={item.images[0]?.url}

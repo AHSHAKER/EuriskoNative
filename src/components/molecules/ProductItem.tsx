@@ -1,15 +1,29 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {MainStackParamList} from '../../navigator/Types';
 
 type ProductItemProps = {
+  id: string;
   title: string;
   price: number;
   imageUrl: string;
 };
 
-const ProductItem: React.FC<ProductItemProps> = ({title, price, imageUrl}) => {
+const ProductItem: React.FC<ProductItemProps> = ({
+  id,
+  title,
+  price,
+  imageUrl,
+}) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MainStackParamList>>();
+
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('ProductDetails', {productId: id})}>
       <Image source={{uri: imageUrl}} style={styles.image} />
       <View style={styles.info}>
         <Text style={styles.title}>{title}</Text>

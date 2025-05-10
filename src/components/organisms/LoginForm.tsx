@@ -11,10 +11,10 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {LoginSchema, LoginData} from '../../utils/schema';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {RootStackParamList} from '../../navigator/Types';
+import type {AuthStackParamList} from '../../navigator/Types';
 import users from '../../data/Users.json';
 
-type Navigation = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 const LoginForm = () => {
   const navigation = useNavigation<Navigation>();

@@ -1,12 +1,11 @@
-import { Product } from '../data/Products';
-
-export type RootStackParamList = {
+export type AuthStackParamList = {
     SignUp: undefined;
     Login: undefined;
+    OTP: { from: string };
     Done: { from: string };
   };
   
 export type MainStackParamList = {
   ProductList: undefined;
-  ProductDetails: { product: Product };
+  ProductDetails: { productId: String };
 };

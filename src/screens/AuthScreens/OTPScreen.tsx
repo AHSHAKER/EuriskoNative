@@ -8,9 +8,10 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {RootStackParamList} from '../../navigator/Types';
+import type {AuthStackParamList} from '../../navigator/Types';
+import {useAuth} from '../../context/AuthContext';
 
-type Navigation = NativeStackNavigationProp<RootStackParamList, 'OTP'>;
+type Navigation = NativeStackNavigationProp<AuthStackParamList, 'OTP'>;
 
 const OTPScreen = () => {
   const navigation = useNavigation<Navigation>();
@@ -18,11 +19,13 @@ const OTPScreen = () => {
   const from = (route.params as any)?.from || 'Unknown';
 
   const [otp, setOtp] = useState('');
+  const {login} = useAuth();
 
   const handleChange = (text: string) => {
     const filtered = text.replace(/[^0-9]/g, '');
     if (filtered.length <= 4) {
       setOtp(filtered);
+      login();
     }
   };
 
@@ -85,6 +88,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     backgroundColor: '#fff',
+    color: '#333',
   },
   button: {
     backgroundColor: '#007aff',

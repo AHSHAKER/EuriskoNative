@@ -11,7 +11,7 @@ import {SignUpSchema, SignUpData} from '../../utils/schema';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {RootStackParamList} from '../../navigator/Types';
+import type {AuthStackParamList} from '../../navigator/Types';
 
 const SignUpForm = () => {
   const {
@@ -24,7 +24,7 @@ const SignUpForm = () => {
   });
 
   const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
   const onSubmit = (data: SignUpData) => {
     console.log('✅ Form Data:', data);

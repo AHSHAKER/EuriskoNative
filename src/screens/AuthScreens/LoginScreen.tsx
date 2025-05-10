@@ -2,10 +2,10 @@ import React from 'react';
 import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import type {RootStackParamList} from '../../navigator/Types';
+import type {AuthStackParamList} from '../../navigator/Types';
 import LoginForm from '../../components/organisms/LoginForm';
 
-type Navigation = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 const LoginScreen = () => {
   const navigation = useNavigation<Navigation>();

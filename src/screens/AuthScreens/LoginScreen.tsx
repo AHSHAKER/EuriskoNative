@@ -20,9 +20,14 @@ const LoginScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <CustomText style={styles.title}>Log In</CustomText>
+      <CustomText size={28} weight="bold" style={styles.title}>
+        Log In
+      </CustomText>
+
       <LoginForm />
+
       <CustomText style={styles.normalText}>Don't have an account?</CustomText>
+
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
         <CustomText style={styles.link}>Sign Up</CustomText>
       </TouchableOpacity>
@@ -41,19 +46,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
   },
   title: {
-    fontSize: width * 0.07,
-    fontWeight: 'bold',
     marginBottom: height * 0.04,
     textAlign: 'center',
     color: '#333',
   },
   link: {
-    fontSize: width * 0.04,
     color: '#007aff',
     textAlign: 'center',
   },
   normalText: {
-    fontSize: width * 0.04,
     textAlign: 'center',
     marginTop: height * 0.03,
     color: '#333',

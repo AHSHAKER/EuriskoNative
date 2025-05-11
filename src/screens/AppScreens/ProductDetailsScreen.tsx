@@ -20,9 +20,9 @@ const ProductDetailsScreen = () => {
 
   if (!product) {
     return (
-      <CustomText style={{padding: width * 0.05, fontSize: width * 0.04}}>
-        Product not found
-      </CustomText>
+      <View style={styles.notFoundContainer}>
+        <CustomText size={14}>Product not found</CustomText>
+      </View>
     );
   }
 
@@ -30,9 +30,13 @@ const ProductDetailsScreen = () => {
     <View style={{flex: 1, backgroundColor: dark ? '#121212' : '#fff'}}>
       <ScrollView contentContainerStyle={styles.container}>
         <Image source={{uri: product.images[0]?.url}} style={styles.image} />
-        <CustomText style={styles.title}>{product.title}</CustomText>
-        <CustomText style={styles.price}>${product.price}</CustomText>
-        <CustomText style={styles.description}>
+        <CustomText size={20} weight="bold" style={styles.title}>
+          {product.title}
+        </CustomText>
+        <CustomText size={18} style={styles.price}>
+          ${product.price}
+        </CustomText>
+        <CustomText size={15} style={styles.description}>
           {product.description}
         </CustomText>
       </ScrollView>
@@ -60,18 +64,14 @@ const createStyles = (dark: boolean) =>
       marginBottom: height * 0.02,
     },
     title: {
-      fontSize: width * 0.06,
-      fontWeight: 'bold',
       marginBottom: height * 0.01,
       color: dark ? '#fff' : '#000',
     },
     price: {
-      fontSize: width * 0.05,
-      color: dark ? '#bbb' : '#888',
       marginBottom: height * 0.01,
+      color: dark ? '#bbb' : '#888',
     },
     description: {
-      fontSize: width * 0.04,
       textAlign: 'center',
       color: dark ? '#ddd' : '#333',
     },
@@ -83,5 +83,11 @@ const createStyles = (dark: boolean) =>
       backgroundColor: dark ? '#222' : '#fff',
       borderTopWidth: 1,
       borderColor: dark ? '#444' : '#eee',
+    },
+    notFoundContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: width * 0.05,
     },
   });

@@ -39,8 +39,13 @@ const OTPScreen = () => {
 
   return (
     <View style={styles.container}>
-      <CustomText style={styles.title}>OTP Verification</CustomText>
-      <CustomText style={styles.subtitle}>Verifying for: {from}</CustomText>
+      <CustomText size={28} weight="bold" style={styles.title}>
+        OTP Verification
+      </CustomText>
+      <CustomText size={16} style={styles.subtitle}>
+        Verifying for: {from}
+      </CustomText>
+
       <TextInput
         style={styles.input}
         placeholder="Enter 4-digit OTP"
@@ -49,11 +54,14 @@ const OTPScreen = () => {
         onChangeText={handleChange}
         maxLength={4}
       />
+
       <TouchableOpacity
         onPress={handleVerify}
         style={[styles.button, otp.length !== 4 && styles.buttonDisabled]}
         disabled={otp.length !== 4}>
-        <CustomText style={styles.buttonText}>Verify</CustomText>
+        <CustomText size={16} weight="bold" style={styles.buttonText}>
+          Verify
+        </CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -69,16 +77,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: width * 0.07,
-    fontWeight: 'bold',
-    marginBottom: height * 0.02,
     textAlign: 'center',
+    marginBottom: height * 0.02,
   },
   subtitle: {
-    fontSize: width * 0.04,
-    color: '#555',
     textAlign: 'center',
     marginBottom: height * 0.03,
+    color: '#555',
   },
   input: {
     borderWidth: 1,
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.03,
     paddingVertical: height * 0.015,
     marginBottom: height * 0.025,
-    fontSize: width * 0.045,
+    fontSize: 18,
     textAlign: 'center',
     backgroundColor: '#fff',
     color: '#333',
@@ -103,7 +108,5 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
-    fontSize: width * 0.045,
   },
 });

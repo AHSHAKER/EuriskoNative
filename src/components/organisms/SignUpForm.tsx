@@ -1,5 +1,11 @@
 import React from 'react';
-import {View, TextInput, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SignUpSchema, SignUpData} from '../../utils/schema';
 import {useForm} from 'react-hook-form';
@@ -7,6 +13,8 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
 import CustomText from '../atoms/CustomText';
+
+const {width} = Dimensions.get('window');
 
 const SignUpForm = () => {
   const {
@@ -28,7 +36,9 @@ const SignUpForm = () => {
 
   return (
     <View>
-      <CustomText style={styles.label}>Name</CustomText>
+      <CustomText size={14} style={styles.label}>
+        Name
+      </CustomText>
       <TextInput
         placeholder="Name"
         style={styles.input}
@@ -36,10 +46,14 @@ const SignUpForm = () => {
         {...register('name')}
       />
       {errors.name && (
-        <CustomText style={styles.error}>{errors.name.message}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {errors.name.message}
+        </CustomText>
       )}
 
-      <CustomText style={styles.label}>Email</CustomText>
+      <CustomText size={14} style={styles.label}>
+        Email
+      </CustomText>
       <TextInput
         placeholder="Email"
         keyboardType="email-address"
@@ -48,10 +62,14 @@ const SignUpForm = () => {
         {...register('email')}
       />
       {errors.email && (
-        <CustomText style={styles.error}>{errors.email.message}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {errors.email.message}
+        </CustomText>
       )}
 
-      <CustomText style={styles.label}>Password</CustomText>
+      <CustomText size={14} style={styles.label}>
+        Password
+      </CustomText>
       <TextInput
         placeholder="Password"
         secureTextEntry
@@ -60,10 +78,14 @@ const SignUpForm = () => {
         {...register('password')}
       />
       {errors.password && (
-        <CustomText style={styles.error}>{errors.password.message}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {errors.password.message}
+        </CustomText>
       )}
 
-      <CustomText style={styles.label}>Phone Number</CustomText>
+      <CustomText size={14} style={styles.label}>
+        Phone Number
+      </CustomText>
       <TextInput
         placeholder="Phone Number"
         keyboardType="phone-pad"
@@ -72,11 +94,15 @@ const SignUpForm = () => {
         {...register('phone')}
       />
       {errors.phone && (
-        <CustomText style={styles.error}>{errors.phone.message}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {errors.phone.message}
+        </CustomText>
       )}
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <CustomText style={styles.buttonText}>Sign Up</CustomText>
+        <CustomText size={16} weight="bold" style={styles.buttonText}>
+          Sign Up
+        </CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -88,33 +114,29 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#aaa',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 8,
+    borderRadius: width * 0.02,
+    paddingHorizontal: width * 0.03,
+    paddingVertical: width * 0.025,
+    marginBottom: width * 0.02,
     backgroundColor: '#fff',
     color: 'black',
   },
   button: {
     backgroundColor: '#007aff',
-    borderRadius: 8,
-    paddingVertical: 14,
+    borderRadius: width * 0.02,
+    paddingVertical: width * 0.04,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: width * 0.04,
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
   },
   error: {
     color: 'red',
-    marginBottom: 8,
-    fontSize: 12,
+    marginBottom: width * 0.02,
   },
   label: {
-    marginBottom: 4,
-    fontSize: 14,
-    fontWeight: '500',
+    marginBottom: width * 0.01,
     color: '#333',
   },
 });

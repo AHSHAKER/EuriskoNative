@@ -1,11 +1,13 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet} from 'react-native';
+import {TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 import CustomText from '../atoms/CustomText';
+
+const {width} = Dimensions.get('window');
 
 const AddToCartButton = () => {
   return (
     <TouchableOpacity style={styles.button}>
-      <CustomText style={styles.text} weight="bold">
+      <CustomText weight="bold" size={14} style={styles.text}>
         Add to Cart
       </CustomText>
     </TouchableOpacity>
@@ -19,8 +21,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#007aff',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: width * 0.02,
+    padding: width * 0.02,
     justifyContent: 'center',
     flex: 1,
   },

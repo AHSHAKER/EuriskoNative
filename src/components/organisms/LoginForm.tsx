@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {View, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {LoginSchema, LoginData} from '../../utils/schema';
@@ -9,6 +15,7 @@ import type {AuthStackParamList} from '../../navigator/Types';
 import users from '../../data/Users.json';
 import CustomText from '../atoms/CustomText';
 
+const {width} = Dimensions.get('window');
 type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 const LoginForm = () => {
@@ -25,7 +32,6 @@ const LoginForm = () => {
   });
 
   const onSubmit = (data: LoginData) => {
-    console.log('✅ Login Data:', data);
     setLoginError('');
     const matchedUser = users.find(
       user =>
@@ -36,14 +42,15 @@ const LoginForm = () => {
     if (matchedUser) {
       navigation.navigate('OTP', {from: 'Login'});
     } else {
-      console.log('❌ Invalid credentials');
       setLoginError('Invalid email or password');
     }
   };
 
   return (
     <View>
-      <CustomText style={styles.label}>Email</CustomText>
+      <CustomText size={14} style={styles.label}>
+        Email
+      </CustomText>
       <TextInput
         placeholder="Email"
         keyboardType="email-address"
@@ -52,10 +59,14 @@ const LoginForm = () => {
         {...register('email')}
       />
       {errors.email && (
-        <CustomText style={styles.error}>{errors.email.message}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {errors.email.message}
+        </CustomText>
       )}
 
-      <CustomText style={styles.label}>Password</CustomText>
+      <CustomText size={14} style={styles.label}>
+        Password
+      </CustomText>
       <TextInput
         placeholder="Password"
         secureTextEntry
@@ -64,15 +75,21 @@ const LoginForm = () => {
         {...register('password')}
       />
       {errors.password && (
-        <CustomText style={styles.error}>{errors.password.message}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {errors.password.message}
+        </CustomText>
       )}
 
       {loginError !== '' && (
-        <CustomText style={styles.error}>{loginError}</CustomText>
+        <CustomText size={12} style={styles.error}>
+          {loginError}
+        </CustomText>
       )}
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <CustomText style={styles.buttonText}>Log In</CustomText>
+        <CustomText size={16} weight="bold" style={styles.buttonText}>
+          Log In
+        </CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -84,32 +101,29 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: '#aaa',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 8,
+    borderRadius: width * 0.02,
+    paddingHorizontal: width * 0.025,
+    paddingVertical: width * 0.025,
+    marginBottom: width * 0.02,
     backgroundColor: '#fff',
     color: '#333',
   },
   label: {
-    marginBottom: 4,
-    fontSize: 14,
-    fontWeight: '500',
+    marginBottom: width * 0.01,
     color: '#333',
   },
   error: {
     color: 'red',
-    fontSize: 12,
+    marginBottom: width * 0.015,
   },
   button: {
     backgroundColor: '#007aff',
-    borderRadius: 8,
-    paddingVertical: 14,
+    borderRadius: width * 0.02,
+    paddingVertical: width * 0.025,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: width * 0.04,
   },
   buttonText: {
     color: '#fff',
-    fontWeight: 'bold',
   },
 });

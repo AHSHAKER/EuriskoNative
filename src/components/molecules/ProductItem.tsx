@@ -1,10 +1,18 @@
 import React from 'react';
-import {View, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {MainStackParamList} from '../../navigator/Types';
 import {useTheme} from '../../context/ThemeContext';
 import CustomText from '../atoms/CustomText';
+
+const {width} = Dimensions.get('window');
 
 type ProductItemProps = {
   id: string;
@@ -30,10 +38,12 @@ const ProductItem: React.FC<ProductItemProps> = ({
       onPress={() => navigation.navigate('ProductDetails', {productId: id})}>
       <Image source={{uri: imageUrl}} style={styles.image} />
       <View style={styles.info}>
-        <CustomText style={styles.title} weight="bold">
+        <CustomText size={16} weight="bold" style={styles.title}>
           {title}
         </CustomText>
-        <CustomText style={styles.price}>{`$${price}`}</CustomText>
+        <CustomText size={14} style={styles.price}>
+          ${price}
+        </CustomText>
       </View>
     </TouchableOpacity>
   );
@@ -46,29 +56,27 @@ const createStyles = (dark: boolean) =>
     card: {
       flexDirection: 'row',
       backgroundColor: dark ? '#333' : '#fff',
-      marginHorizontal: 10,
-      marginVertical: 6,
-      borderRadius: 8,
-      padding: 10,
+      marginHorizontal: width * 0.02,
+      marginVertical: width * 0.02,
+      borderRadius: width * 0.02,
+      padding: width * 0.02,
       elevation: 2,
       alignItems: 'center',
     },
     image: {
-      width: 80,
-      height: 80,
-      borderRadius: 6,
-      marginRight: 10,
+      width: width * 0.2,
+      height: width * 0.2,
+      borderRadius: width * 0.02,
+      marginRight: width * 0.04,
     },
     info: {
       flex: 1,
     },
     title: {
-      fontSize: 16,
       color: dark ? '#fff' : '#000',
     },
     price: {
-      fontSize: 14,
-      marginTop: 4,
+      marginTop: width * 0.01,
       color: dark ? '#ccc' : '#333',
     },
   });

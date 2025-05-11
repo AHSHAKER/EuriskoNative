@@ -24,9 +24,7 @@ const ProductListScreen = () => {
         <TouchableOpacity
           onPress={toggleTheme}
           style={[styles.themeButton, {backgroundColor: theme.card}]}>
-          <CustomText style={[styles.themeIcon, {color: theme.text}]}>
-            🌓
-          </CustomText>
+          <CustomText size={20}>🌓</CustomText>
         </TouchableOpacity>
       ),
     });
@@ -66,8 +64,5 @@ const styles = StyleSheet.create({
     marginRight: width * 0.03,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  themeIcon: {
-    fontSize: width * 0.045,
   },
 });

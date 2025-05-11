@@ -8,7 +8,9 @@ const {width, height} = Dimensions.get('window');
 const SignUpScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <CustomText style={styles.title}>Create Account</CustomText>
+      <CustomText size={28} weight="bold" style={styles.title}>
+        Create Account
+      </CustomText>
       <SignUpForm />
     </ScrollView>
   );
@@ -25,8 +27,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
   },
   title: {
-    fontSize: width * 0.07,
-    fontWeight: 'bold',
     marginBottom: height * 0.04,
     textAlign: 'center',
     color: '#333',

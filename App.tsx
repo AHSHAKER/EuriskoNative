@@ -12,6 +12,7 @@ import type {
 } from './src/navigator/Types';
 import {AuthProvider, useAuth} from './src/context/AuthContext';
 import {ThemeProvider, useTheme} from './src/context/ThemeContext';
+import HeaderTitle from './src/components/atoms/HeaderTitle';
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const MainStack = createNativeStackNavigator<MainStackParamList>();
@@ -39,10 +40,7 @@ function MainStackNavigator() {
             backgroundColor: theme.header,
           },
           headerTintColor: theme.text,
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          title: 'Products',
+          headerTitle: () => <HeaderTitle />,
         }}
       />
       <MainStack.Screen
@@ -59,7 +57,7 @@ function AppNavigation() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <MainStackNavigator /> : <AuthStackNavigator />}
+      {!isAuthenticated ? <MainStackNavigator /> : <AuthStackNavigator />}
     </NavigationContainer>
   );
 }

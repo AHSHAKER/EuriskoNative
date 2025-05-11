@@ -57,7 +57,7 @@ function AppNavigation() {
 
   return (
     <NavigationContainer>
-      {!isAuthenticated ? <MainStackNavigator /> : <AuthStackNavigator />}
+      {isAuthenticated ? <MainStackNavigator /> : <AuthStackNavigator />}
     </NavigationContainer>
   );
 }

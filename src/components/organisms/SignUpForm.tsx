@@ -1,10 +1,12 @@
 import React from 'react';
+import {signUp} from '../../api/auth';
 import {
   View,
   TextInput,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SignUpSchema, SignUpData} from '../../utils/schema';
@@ -29,9 +31,17 @@ const SignUpForm = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
-  const onSubmit = (data: SignUpData) => {
-    console.log('✅ Form Data:', data);
-    navigation.navigate('OTP', {from: 'SignUp'});
+  const onSubmit = async (formData: SignUpData) => {
+    try {
+      const response = await signUp(formData);
+      console.log('✅ Signup Success:', response);
+      navigation.navigate('OTP', {from: 'SignUp'});
+    } catch (error: any) {
+      console.log('❌ Signup Failed:', error?.response?.data || error.message);
+      const message =
+        error?.response?.data?.error?.message || 'An unexpected error occurred';
+      Alert.alert('Signup Failed', message);
+    }
   };
 
   return (

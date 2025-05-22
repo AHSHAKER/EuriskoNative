@@ -10,7 +10,7 @@ import type {
   MainStackParamList,
   AuthStackParamList,
 } from './src/navigator/Types';
-import {AuthProvider, useAuth} from './src/context/AuthContext';
+import {useAuthStore} from './src/store/AuthStore';
 import {ThemeProvider, useTheme} from './src/context/ThemeContext';
 import HeaderTitle from './src/components/atoms/HeaderTitle';
 
@@ -53,11 +53,11 @@ function MainStackNavigator() {
 }
 
 function AppNavigation() {
-  const {isAuthenticated} = useAuth();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   return (
     <NavigationContainer>
-      {!isAuthenticated ? <MainStackNavigator /> : <AuthStackNavigator />}
+      {isAuthenticated ? <MainStackNavigator /> : <AuthStackNavigator />}
     </NavigationContainer>
   );
 }
@@ -65,9 +65,7 @@ function AppNavigation() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AppNavigation />
-      </AuthProvider>
+      <AppNavigation />
     </ThemeProvider>
   );
 }

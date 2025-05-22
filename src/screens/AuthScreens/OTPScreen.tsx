@@ -9,7 +9,7 @@ import {
 import {useNavigation, useRoute} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
-import {useAuth} from '../../context/AuthContext';
+import {useAuthStore} from '../../store/AuthStore';
 import CustomText from '../../components/atoms/CustomText';
 
 type Navigation = NativeStackNavigationProp<AuthStackParamList, 'OTP'>;
@@ -22,7 +22,7 @@ const OTPScreen = () => {
   const from = (route.params as any)?.from || 'Unknown';
 
   const [otp, setOtp] = useState('');
-  const {login} = useAuth();
+  const login = useAuthStore(state => state.login);
 
   const handleChange = (text: string) => {
     const filtered = text.replace(/[^0-9]/g, '');
@@ -33,7 +33,7 @@ const OTPScreen = () => {
 
   const handleVerify = () => {
     if (otp.length === 4) {
-      login();
+      login('mock-token');
     }
   };
 

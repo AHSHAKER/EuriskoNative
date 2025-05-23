@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -12,15 +13,15 @@ import {LoginSchema, LoginData} from '../../utils/schema';
 import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
-import users from '../../data/Users.json';
 import CustomText from '../atoms/CustomText';
+import {login, resendOTP} from '../../api/auth';
+import {useAuthStore} from '../../store/AuthStore';
 
 const {width} = Dimensions.get('window');
 type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 const LoginForm = () => {
   const navigation = useNavigation<Navigation>();
-  const [loginError, setLoginError] = useState('');
 
   const {
     register,
@@ -31,18 +32,37 @@ const LoginForm = () => {
     resolver: zodResolver(LoginSchema),
   });
 
-  const onSubmit = (data: LoginData) => {
-    setLoginError('');
-    const matchedUser = users.find(
-      user =>
-        user.username.toLowerCase() === data.email.trim().toLowerCase() &&
-        user.password === data.password,
-    );
+  const onSubmit = async (data: LoginData) => {
+    try {
+      console.log('Attempting to log in with:', data);
+      const res = await login({email: data.email, password: data.password});
+      console.log('Login response:', res);
 
-    if (matchedUser) {
-      navigation.navigate('OTP', {from: 'Login'});
-    } else {
-      setLoginError('Invalid email or password');
+      const {accessToken, refreshToken} = res.data;
+      if (!accessToken || !refreshToken) {
+        throw new Error('Tokens missing from login response');
+      }
+
+      console.log('Tokens received:', {accessToken, refreshToken});
+      useAuthStore.getState().login({accessToken, refreshToken}); // ✅ Fixed
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const message =
+        err?.response?.data?.error?.message ||
+        'Login failed. Please try again.';
+
+      if (status === 403 && message.toLowerCase().includes('verify')) {
+        try {
+          await resendOTP(data.email);
+          navigation.navigate('OTP', {from: 'Login', email: data.email});
+          return;
+        } catch {
+          Alert.alert('Error', 'Could not resend OTP.');
+          return;
+        }
+      }
+
+      Alert.alert('Login Error', message);
     }
   };
 
@@ -76,13 +96,7 @@ const LoginForm = () => {
       />
       {errors.password && (
         <CustomText size={12} style={styles.error}>
-          {errors.password.message}
-        </CustomText>
-      )}
-
-      {loginError !== '' && (
-        <CustomText size={12} style={styles.error}>
-          {loginError}
+          {errors.password.message}123
         </CustomText>
       )}
 

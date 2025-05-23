@@ -1,11 +1,32 @@
 export type AuthStackParamList = {
     SignUp: undefined;
     Login: undefined;
-    OTP: { from: string };
-    Done: { from: string };
+    OTP: { from: 'Login' | 'SignUp'; email: string };
   };
   
 export type MainStackParamList = {
   ProductList: undefined;
   ProductDetails: { productId: String };
+  AddProduct: undefined;
+  EditProduct: { productId: String };
 };
+
+export type Product = {
+  _id: string;
+  title: string;
+  description: string;
+  price: number;
+  images: { url: string }[];
+  location: {
+    name: string;
+    longitude: number;
+    latitude: number;
+  };
+  user: {
+    username: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+};
+

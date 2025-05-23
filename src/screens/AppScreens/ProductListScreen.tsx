@@ -18,6 +18,7 @@ import AddProductButton from '../../components/atoms/AddProductButton';
 import {getProducts, searchProducts} from '../../api/products';
 import type {Product} from '../../navigator/Types';
 import {useAuthStore} from '../../store/AuthStore';
+import LogoutButton from '../../components/atoms/LogoutButton';
 
 const {width, height} = Dimensions.get('window');
 
@@ -89,11 +90,16 @@ const ProductListScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={toggleTheme}
-          style={[styles.themeButton, {backgroundColor: theme.card}]}>
-          <CustomText size={20}>🌓</CustomText>
-        </TouchableOpacity>
+        <View style={styles.headerButtonsContainer}>
+          <TouchableOpacity
+            onPress={toggleTheme}
+            style={[styles.headerButton, {backgroundColor: theme.card}]}>
+            <CustomText size={25}>🌓</CustomText>
+          </TouchableOpacity>
+          <LogoutButton
+            style={[styles.headerButton, {backgroundColor: theme.card}]}
+          />
+        </View>
       ),
     });
   }, [navigation, toggleTheme, theme]);
@@ -169,10 +175,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: height * 0.01,
   },
-  themeButton: {
-    padding: width * 0.02,
+  headerButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingRight: width * 0.02,
+    columnGap: width * 0.02, // Works in RN >= 0.71, use marginRight fallback below if needed
+    maxWidth: width * 0.45, // Prevents overflow beyond screen
+  },
+  headerButton: {
+    width: width * 0.2,
+    height: width * 0.1 + width * 0.04, // optional, visually consistent
     borderRadius: width * 0.05,
-    marginRight: width * 0.03,
     alignItems: 'center',
     justifyContent: 'center',
   },

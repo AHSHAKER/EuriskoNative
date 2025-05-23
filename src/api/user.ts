@@ -12,19 +12,22 @@ export const getUserProfile = async (token: string) => {
 };
 
 export const updateUserProfile = async (
-    token: string,
-    data: { firstName: string; lastName: string }
-  ) => {
-    const formData = new FormData();
-    formData.append('firstName', data.firstName);
-    formData.append('lastName', data.lastName);
-  
-    const response = await axios.put(`${BASE_URL}/user/profile`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-  
-    return response.data;
-  };
+  token: string,
+  data: { firstName: string; lastName: string; profileImage?: any }
+) => {
+  const formData = new FormData();
+  formData.append('firstName', data.firstName);
+  formData.append('lastName', data.lastName);
+  if (data.profileImage) {
+    formData.append('profileImage', data.profileImage as any);
+  }
+
+  const response = await axios.put(`${BASE_URL}/user/profile`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return response.data;
+};

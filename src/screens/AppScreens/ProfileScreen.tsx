@@ -7,7 +7,9 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {getUserProfile, updateUserProfile} from '../../api/user';
 import {useAuthStore} from '../../store/AuthStore';
 import {useTheme} from '../../context/ThemeContext';
@@ -19,8 +21,11 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [profileImage, setProfileImage] = useState<any>(null); // local file object
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null); // backend image
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
@@ -30,6 +35,11 @@ export default function ProfileScreen() {
       const user = res.data.user;
       setFirstName(user.firstName || '');
       setLastName(user.lastName || '');
+      if (user.profileImage?.url) {
+        setProfileImageUrl(
+          `https://backend-practice.eurisko.me${user.profileImage.url}`,
+        );
+      }
     } catch (err) {
       setError(true);
     } finally {
@@ -41,11 +51,33 @@ export default function ProfileScreen() {
     loadProfile();
   }, [loadProfile]);
 
+  const handleImagePick = async () => {
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.8,
+    });
+
+    if (result.assets && result.assets.length > 0) {
+      const asset = result.assets[0];
+      setProfileImage({
+        uri: asset.uri || '',
+        type: asset.type || 'image/jpeg',
+        name: asset.fileName || 'profile.jpg',
+      });
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateUserProfile(accessToken, {firstName, lastName});
+      await updateUserProfile(accessToken, {
+        firstName,
+        lastName,
+        profileImage,
+      });
       Alert.alert('Success', 'Profile updated successfully');
+      loadProfile(); // refresh profile after update
+      setProfileImage(null);
     } catch (error) {
       Alert.alert('Error', 'Failed to update profile');
     } finally {
@@ -78,6 +110,24 @@ export default function ProfileScreen() {
 
   return (
     <View style={[styles.container, {backgroundColor: theme.background}]}>
+      <TouchableOpacity
+        onPress={handleImagePick}
+        style={styles.avatarContainer}>
+        <Image
+          source={
+            profileImage
+              ? {uri: profileImage.uri}
+              : profileImageUrl
+              ? {uri: profileImageUrl}
+              : {uri: 'https://via.placeholder.com/100x100.png?text=Avatar'}
+          }
+          style={styles.avatar}
+        />
+        <Text style={{color: theme.text, marginTop: 8}}>
+          Change Profile Picture
+        </Text>
+      </TouchableOpacity>
+
       <Text style={[styles.label, {color: theme.text}]}>First Name</Text>
       <TextInput
         style={[styles.input, {color: theme.text, borderColor: theme.card}]}
@@ -147,5 +197,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#ccc',
   },
 });

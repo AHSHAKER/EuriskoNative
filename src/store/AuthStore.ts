@@ -1,4 +1,4 @@
-// src/store/useAuthStore.ts
+// src/store/AuthStore.ts
 import {create} from 'zustand';
 import {persist} from 'zustand/middleware';
 

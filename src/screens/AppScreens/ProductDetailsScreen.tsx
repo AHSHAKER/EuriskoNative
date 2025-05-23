@@ -1,26 +1,88 @@
-import React from 'react';
-import {View, Image, ScrollView, StyleSheet, Dimensions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  Alert,
+  TouchableWithoutFeedback,
+  PermissionsAndroid,
+  Platform,
+  TouchableOpacity,
+} from 'react-native';
 import {useRoute, RouteProp} from '@react-navigation/native';
-import {MainStackParamList} from '../../navigator/Types';
-import {products} from '../../data/Products';
-import ShareButton from '../../components/atoms/ShareButton';
-import AddToCartButton from '../../components/atoms/AddToCart';
+import {SwiperFlatList} from 'react-native-swiper-flatlist';
+import RNFS from 'react-native-fs';
 import {useTheme} from '../../context/ThemeContext';
 import CustomText from '../../components/atoms/CustomText';
-
-type ProductDetailsRouteProp = RouteProp<MainStackParamList, 'ProductDetails'>;
+import {getProductById} from '../../api/products';
+import {MainStackParamList} from '../../navigator/Types';
+import downloadImageWithAxios from '../../api/imgDownload';
+import {useAuthStore} from '../../store/AuthStore';
 
 const {width, height} = Dimensions.get('window');
 
+type ProductDetailsRouteProp = RouteProp<MainStackParamList, 'ProductDetails'>;
+
 const ProductDetailsScreen = () => {
+  const accessToken = useAuthStore(state => state.accessToken);
   const {productId} = useRoute<ProductDetailsRouteProp>().params;
-  const product = products.find(p => p._id === productId);
   const {dark} = useTheme();
   const styles = createStyles(dark);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        if (!accessToken) return;
+
+        const product = await getProductById(accessToken, productId);
+        setProduct(product);
+      } catch (error) {
+        console.error('Failed to fetch product:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [accessToken, productId]);
+
+  const handleLongPressImage = async (relativeUrl: string) => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          return Alert.alert(
+            'Permission Denied',
+            'Storage permission is required.',
+          );
+        }
+      }
+
+      const fullUrl = `https://backend-practice.eurisko.me${relativeUrl}`;
+      await downloadImageWithAxios(fullUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      Alert.alert('Error', 'Image download failed.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <CustomText size={14}>Loading...</CustomText>
+      </View>
+    );
+  }
 
   if (!product) {
     return (
-      <View style={styles.notFoundContainer}>
+      <View style={styles.centered}>
         <CustomText size={14}>Product not found</CustomText>
       </View>
     );
@@ -29,21 +91,61 @@ const ProductDetailsScreen = () => {
   return (
     <View style={{flex: 1, backgroundColor: dark ? '#121212' : '#fff'}}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={{uri: product.images[0]?.url}} style={styles.image} />
+        <View>
+          <SwiperFlatList
+            autoplay
+            autoplayDelay={3}
+            autoplayLoop
+            index={0}
+            data={Array.isArray(product.images) ? product.images : []}
+            renderItem={({item}) => (
+              <TouchableWithoutFeedback
+                onLongPress={() => handleLongPressImage(item.url)}>
+                <Image
+                  source={{
+                    uri: `https://backend-practice.eurisko.me${item.url}`,
+                  }}
+                  style={styles.image}
+                />
+              </TouchableWithoutFeedback>
+            )}
+            showPagination
+            paginationStyle={{bottom: 10}}
+          />
+        </View>
+
         <CustomText size={20} weight="bold" style={styles.title}>
           {product.title}
         </CustomText>
         <CustomText size={18} style={styles.price}>
           ${product.price}
         </CustomText>
+
+        <View style={styles.ownerContainer}>
+          <CustomText size={14} weight="bold">
+            Owner: {product.owner?.name}
+          </CustomText>
+          <CustomText size={14} style={{color: 'blue'}}>
+            {product.owner?.email}
+          </CustomText>
+        </View>
+
         <CustomText size={15} style={styles.description}>
           {product.description}
         </CustomText>
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <ShareButton />
-        <AddToCartButton />
+        <TouchableOpacity style={styles.disabledButton} activeOpacity={1}>
+          <CustomText size={14} weight="bold" style={styles.disabledText}>
+            Share
+          </CustomText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.disabledButton} activeOpacity={1}>
+          <CustomText size={14} weight="bold" style={styles.disabledText}>
+            Add to Cart
+          </CustomText>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -54,40 +156,54 @@ export default ProductDetailsScreen;
 const createStyles = (dark: boolean) =>
   StyleSheet.create({
     container: {
-      padding: width * 0.05,
+      paddingBottom: 40,
       alignItems: 'center',
     },
     image: {
-      width: '100%',
+      width,
       height: height * 0.4,
-      borderRadius: 10,
-      marginBottom: height * 0.02,
     },
     title: {
-      marginBottom: height * 0.01,
+      marginTop: 10,
       color: dark ? '#fff' : '#000',
     },
     price: {
-      marginBottom: height * 0.01,
-      color: dark ? '#bbb' : '#888',
+      marginVertical: 8,
+      color: dark ? '#bbb' : '#444',
     },
     description: {
+      marginHorizontal: 16,
       textAlign: 'center',
       color: dark ? '#ddd' : '#333',
+    },
+    ownerContainer: {
+      marginTop: 20,
+      paddingHorizontal: 16,
     },
     buttonContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingHorizontal: width * 0.05,
-      paddingVertical: height * 0.015,
-      backgroundColor: dark ? '#222' : '#fff',
+      paddingVertical: 10,
+      paddingHorizontal: '2.5%', // 2.5% margin on left and right
       borderTopWidth: 1,
       borderColor: dark ? '#444' : '#eee',
+      backgroundColor: dark ? '#222' : '#fff',
     },
-    notFoundContainer: {
+    disabledButton: {
+      width: '49%',
+      backgroundColor: dark ? '#333' : '#ccc',
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+    disabledText: {
+      color: '#888',
+    },
+    centered: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: width * 0.05,
     },
   });

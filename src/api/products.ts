@@ -80,3 +80,20 @@ export const getProducts = async (
 
   return res.data;
 };
+
+// ✅ Get Product by ID
+export const getProductById = async (
+    accessToken: string,
+    productId: string
+  ): Promise<Product> => {
+    const res = await axios.get(
+      `https://backend-practice.eurisko.me/api/products/${productId}`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
+    return res.data.data;
+  };
+  
+  
+  

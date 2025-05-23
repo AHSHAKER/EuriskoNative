@@ -22,6 +22,7 @@ import {useAuthStore} from '../../store/AuthStore';
 import EditProductButton from '../../components/atoms/EditProductButton';
 import DeleteProductButton from '../../components/atoms/DeleteProductButton';
 import {getUserIdFromToken} from '../../utils/UserIdHelper';
+import MapView, {Marker} from 'react-native-maps';
 
 const {width, height} = Dimensions.get('window');
 
@@ -136,6 +137,33 @@ const ProductDetailsScreen = () => {
         <CustomText size={15} style={styles.description}>
           {product.description}
         </CustomText>
+
+        {product.location?.latitude && product.location?.longitude && (
+          <View
+            style={{
+              height: 200,
+              width: '90%',
+              marginTop: 16,
+              borderRadius: 10,
+              overflow: 'hidden',
+              alignSelf: 'center',
+            }}>
+            <MapView
+              style={{flex: 1}}
+              initialRegion={{
+                latitude: product.location.latitude,
+                longitude: product.location.longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+              }}
+              scrollEnabled={false}
+              zoomEnabled={false}
+              pitchEnabled={false}
+              rotateEnabled={false}>
+              <Marker coordinate={product.location} />
+            </MapView>
+          </View>
+        )}
 
         {product.user?._id === userId && (
           <View

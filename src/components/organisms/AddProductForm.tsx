@@ -17,8 +17,13 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {createProduct} from '../../api/products';
 import {useAuthStore} from '../../store/AuthStore';
 import CustomText from '../atoms/CustomText';
+import LocationPicker from '../molecules/LocationPicker';
+import {useTheme} from '../../context/ThemeContext';
 
 const AddProductForm = () => {
+  const {dark} = useTheme();
+  const styles = getStyles(dark);
+
   const {
     control,
     handleSubmit,
@@ -37,6 +42,12 @@ const AddProductForm = () => {
 
   const [localImages, setLocalImages] = useState<any[]>([]);
   const accessToken = useAuthStore(state => state.accessToken);
+  const [locationPickerVisible, setLocationPickerVisible] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState({
+    name: 'Default Location',
+    latitude: 36.8065,
+    longitude: 10.1815,
+  });
 
   const requestGalleryPermission = async () => {
     if (Platform.OS === 'android') {
@@ -92,9 +103,9 @@ const AddProductForm = () => {
         description: form.description,
         price: parseFloat(form.price as any),
         location: {
-          name: 'Default Location',
-          latitude: 36.8065,
-          longitude: 10.1815,
+          name: selectedLocation.name,
+          latitude: selectedLocation.latitude,
+          longitude: selectedLocation.longitude,
         },
         images: localImages.map((img, index) => ({
           uri: img.uri,
@@ -117,7 +128,9 @@ const AddProductForm = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      keyboardShouldPersistTaps="handled">
       <CustomText style={styles.label}>Name</CustomText>
       <Controller
         control={control}
@@ -127,6 +140,7 @@ const AddProductForm = () => {
             value={value}
             onChangeText={onChange}
             placeholder="Product name"
+            placeholderTextColor={dark ? '#888' : '#aaa'}
             style={styles.input}
           />
         )}
@@ -144,6 +158,7 @@ const AddProductForm = () => {
             value={value}
             onChangeText={onChange}
             placeholder="Product description"
+            placeholderTextColor={dark ? '#888' : '#aaa'}
             multiline
             style={[styles.input, styles.textArea]}
           />
@@ -164,6 +179,7 @@ const AddProductForm = () => {
             value={String(value)}
             onChangeText={onChange}
             placeholder="Price (e.g., 99.99)"
+            placeholderTextColor={dark ? '#888' : '#aaa'}
             keyboardType="numeric"
             style={styles.input}
           />
@@ -184,12 +200,34 @@ const AddProductForm = () => {
       {localImages.length > 0 && (
         <ScrollView horizontal style={styles.imagePreviewContainer}>
           {localImages.map((img, i) => (
-            <TouchableOpacity key={i} onPress={() => removeImage(i)}>
+            <TouchableOpacity
+              key={i}
+              onPress={() => removeImage(i)}
+              style={styles.imageWrapper}>
               <Image source={{uri: img.uri}} style={styles.imageThumbnail} />
+              <CustomText style={styles.removeImageText}>✕</CustomText>
             </TouchableOpacity>
           ))}
         </ScrollView>
       )}
+
+      <CustomText style={styles.label}>Location</CustomText>
+      <TouchableOpacity
+        onPress={() => setLocationPickerVisible(true)}
+        style={styles.pickButton}>
+        <CustomText style={styles.pickButtonText}>Pick Location</CustomText>
+      </TouchableOpacity>
+      <CustomText style={{marginBottom: 10, color: dark ? '#fff' : '#000'}}>
+        {`Lat: ${selectedLocation.latitude}, Lng: ${selectedLocation.longitude}`}
+      </CustomText>
+
+      <LocationPicker
+        visible={locationPickerVisible}
+        onClose={() => setLocationPickerVisible(false)}
+        onLocationPicked={loc => {
+          setSelectedLocation({...loc, name: 'Picked Location'});
+        }}
+      />
 
       <TouchableOpacity
         onPress={handleSubmit(onSubmit)}
@@ -200,58 +238,97 @@ const AddProductForm = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
-  label: {
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
-  },
-  textArea: {
-    height: 100,
-  },
-  error: {
-    color: 'red',
-    marginBottom: 10,
-  },
-  pickButton: {
-    marginVertical: 8,
-    backgroundColor: '#007bff',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  pickButtonText: {
-    color: 'white',
-  },
-  imagePreviewContainer: {
-    marginVertical: 8,
-    flexDirection: 'row',
-  },
-  imageThumbnail: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    marginRight: 8,
-  },
-  submitButton: {
-    marginTop: 24,
-    backgroundColor: '#28a745',
-    padding: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: 'white',
-  },
-});
+const getStyles = (dark: boolean) =>
+  StyleSheet.create({
+    container: {
+      padding: 16,
+      backgroundColor: dark ? '#121212' : '#fff',
+      flexGrow: 1,
+    },
+    label: {
+      fontWeight: '600',
+      marginBottom: 4,
+      color: dark ? '#eee' : '#111',
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: dark ? '#444' : '#ccc',
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 10,
+      color: dark ? '#fff' : '#000',
+      backgroundColor: dark ? '#222' : '#fff',
+    },
+    textArea: {
+      height: 100,
+      textAlignVertical: 'top',
+    },
+    error: {
+      color: '#ff6b6b',
+      marginBottom: 10,
+    },
+    pickButton: {
+      marginVertical: 8,
+      backgroundColor: dark ? '#0a84ff' : '#007bff',
+      padding: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      shadowColor: dark ? '#0a84ff' : '#007bff',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    pickButtonText: {
+      color: 'white',
+      fontWeight: '600',
+    },
+    imagePreviewContainer: {
+      marginVertical: 8,
+      flexDirection: 'row',
+    },
+    imageWrapper: {
+      marginRight: 8,
+      position: 'relative',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    imageThumbnail: {
+      width: 80,
+      height: 80,
+      borderRadius: 8,
+    },
+    removeImageText: {
+      position: 'absolute',
+      top: 4,
+      right: 4,
+      backgroundColor: 'rgba(255,0,0,0.7)',
+      color: 'white',
+      borderRadius: 12,
+      paddingHorizontal: 6,
+      paddingVertical: 0,
+      fontWeight: 'bold',
+      fontSize: 18,
+      lineHeight: 18,
+      overflow: 'hidden',
+    },
+    submitButton: {
+      marginTop: 24,
+      backgroundColor: dark ? '#28a745' : '#28a745',
+      padding: 14,
+      borderRadius: 8,
+      alignItems: 'center',
+      shadowColor: '#28a745',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    submitButtonText: {
+      color: 'white',
+      fontWeight: '600',
+      fontSize: 16,
+    },
+  });
 
 export default AddProductForm;

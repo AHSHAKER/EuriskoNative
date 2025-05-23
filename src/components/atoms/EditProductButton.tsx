@@ -2,13 +2,14 @@ import React from 'react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 import CustomText from '../atoms/CustomText';
 import {useNavigation} from '@react-navigation/native';
-
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import type {MainStackParamList} from '../../navigator/Types';
 type Props = {
   productId: string;
 };
-
 const EditProductButton = ({productId}: Props) => {
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
   const handleEdit = () => {
     navigation.navigate('EditProduct', {productId});

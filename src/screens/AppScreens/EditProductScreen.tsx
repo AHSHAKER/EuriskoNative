@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   TextInput,
-  Button,
   ScrollView,
   StyleSheet,
   Alert,
@@ -17,6 +16,8 @@ import {useAuthStore} from '../../store/AuthStore';
 import {getProductById, updateProduct} from '../../api/products';
 import {MainStackParamList} from '../../navigator/Types';
 import {useTheme} from '../../context/ThemeContext';
+import LocationPicker from '../../components/molecules/LocationPicker';
+import CustomText from '../../components/atoms/CustomText';
 
 type EditProductRouteProp = RouteProp<MainStackParamList, 'EditProduct'>;
 
@@ -30,7 +31,7 @@ const EditProductScreen = () => {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
+  const [locationPickerVisible, setLocationPickerVisible] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -48,6 +49,7 @@ const EditProductScreen = () => {
 
     const fetchProduct = async () => {
       try {
+        console.log('Fetching product with ID:', productId);
         const product = await getProductById(accessToken, productId);
 
         setTitle(product.title);
@@ -114,6 +116,8 @@ const EditProductScreen = () => {
     setSaving(true);
 
     try {
+      console.log('Fetching product with ID:', productId);
+
       await updateProduct(accessToken, productId, {
         title,
         description,
@@ -172,17 +176,31 @@ const EditProductScreen = () => {
         style={styles.input}
         placeholderTextColor={dark ? '#888' : '#aaa'}
       />
-      <TextInput
-        placeholder="Location Name"
-        value={locationName}
-        onChangeText={setLocationName}
-        style={styles.input}
-        placeholderTextColor={dark ? '#888' : '#aaa'}
+
+      <CustomText style={styles.label}>Location</CustomText>
+      <TouchableOpacity
+        onPress={() => setLocationPickerVisible(true)}
+        style={styles.pickButton}>
+        <CustomText style={styles.pickButtonText}>Pick Location</CustomText>
+      </TouchableOpacity>
+      <CustomText style={{marginBottom: 10, color: dark ? '#fff' : '#000'}}>
+        {`Lat: ${locationCoords?.latitude || 'N/A'}, Lng: ${
+          locationCoords?.longitude || 'N/A'
+        }`}
+      </CustomText>
+
+      <LocationPicker
+        visible={locationPickerVisible}
+        onClose={() => setLocationPickerVisible(false)}
+        onLocationPicked={loc => {
+          setLocationCoords({latitude: loc.latitude, longitude: loc.longitude});
+          setLocationName(loc.name || 'Picked Location');
+        }}
       />
 
-      <View style={{marginBottom: 16}}>
-        <Button title="Pick Images" onPress={handleImagePick} />
-      </View>
+      <TouchableOpacity style={styles.pickButton} onPress={handleImagePick}>
+        <CustomText style={styles.pickButtonText}>Pick Images</CustomText>
+      </TouchableOpacity>
 
       <ScrollView
         horizontal
@@ -200,11 +218,15 @@ const EditProductScreen = () => {
         ))}
       </ScrollView>
 
-      <Button
-        title={saving ? 'Saving...' : 'Save'}
+      <TouchableOpacity
+        style={[styles.pickButton, saving && styles.disabledButton]}
         onPress={handleSave}
         disabled={saving}
-      />
+        activeOpacity={saving ? 1 : 0.7}>
+        <CustomText style={styles.pickButtonText}>
+          {saving ? 'Saving...' : 'Save'}
+        </CustomText>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -251,5 +273,34 @@ const getStyles = (dark: boolean) =>
     removeText: {
       color: 'white',
       fontWeight: 'bold',
+    },
+    pickButton: {
+      backgroundColor: dark ? '#0a84ff' : '#007aff',
+      borderRadius: 6,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      marginBottom: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    pickButtonText: {
+      color: '#fff',
+      fontWeight: '600',
+      fontSize: 16,
+    },
+    disabledButton: {
+      backgroundColor: '#888',
+      shadowOpacity: 0,
+      elevation: 0,
+    },
+    label: {
+      fontWeight: '600',
+      marginBottom: 8,
+      color: dark ? '#fff' : '#000',
     },
   });

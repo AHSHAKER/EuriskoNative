@@ -35,7 +35,7 @@ const SignUpForm = () => {
     try {
       const response = await signUp(formData);
       console.log('✅ Signup Success:', response);
-      navigation.navigate('OTP', {from: 'SignUp'});
+      navigation.navigate('OTP', {from: 'SignUp', email: formData.email});
     } catch (error: any) {
       console.log('❌ Signup Failed:', error?.response?.data || error.message);
       const message =

@@ -13,13 +13,15 @@ import {
 } from 'react-native';
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {SwiperFlatList} from 'react-native-swiper-flatlist';
-import RNFS from 'react-native-fs';
 import {useTheme} from '../../context/ThemeContext';
 import CustomText from '../../components/atoms/CustomText';
 import {getProductById} from '../../api/products';
 import {MainStackParamList} from '../../navigator/Types';
 import downloadImageWithAxios from '../../api/imgDownload';
 import {useAuthStore} from '../../store/AuthStore';
+import EditProductButton from '../../components/atoms/EditProductButton';
+import DeleteProductButton from '../../components/atoms/DeleteProductButton';
+import {getUserIdFromToken} from '../../utils/UserIdHelper';
 
 const {width, height} = Dimensions.get('window');
 
@@ -31,6 +33,7 @@ const ProductDetailsScreen = () => {
   const {dark} = useTheme();
   const styles = createStyles(dark);
   const [product, setProduct] = useState<any>(null);
+  const userId = getUserIdFromToken(accessToken);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -91,7 +94,7 @@ const ProductDetailsScreen = () => {
   return (
     <View style={{flex: 1, backgroundColor: dark ? '#121212' : '#fff'}}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View>
+        <View style={{height: height * 0.4, width: '100%'}}>
           <SwiperFlatList
             autoplay
             autoplayDelay={3}
@@ -123,16 +126,28 @@ const ProductDetailsScreen = () => {
 
         <View style={styles.ownerContainer}>
           <CustomText size={14} weight="bold">
-            Owner: {product.owner?.name}
+            Owner: {product.user?.name}
           </CustomText>
           <CustomText size={14} style={{color: 'blue'}}>
-            {product.owner?.email}
+            {product.user?.email}
           </CustomText>
         </View>
 
         <CustomText size={15} style={styles.description}>
           {product.description}
         </CustomText>
+
+        {product.user?._id === userId && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginTop: 16,
+            }}>
+            <EditProductButton productId={productId} />
+            <DeleteProductButton productId={productId} />
+          </View>
+        )}
       </ScrollView>
 
       <View style={styles.buttonContainer}>
@@ -161,7 +176,7 @@ const createStyles = (dark: boolean) =>
     },
     image: {
       width,
-      height: height * 0.4,
+      height: height * 0.34,
     },
     title: {
       marginTop: 10,

@@ -95,5 +95,62 @@ export const getProductById = async (
     return res.data.data;
   };
   
+  // ✅ Delete Product
+export const deleteProduct = async (
+    accessToken: string,
+    productId: string
+  ): Promise<{ message: string }> => {
+    const res = await axios.delete(`${API_BASE_URL}/products/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
   
+    return res.data;
+  };
   
+
+// ✅ Update Product
+  export const updateProduct = async (
+    accessToken: string,
+    productId: string,
+    payload: {
+      title: string;
+      description: string;
+      price: string | number;
+      location?: { name: string; longitude: number; latitude: number };
+      images?: { uri: string; type: string; name: string }[];
+    }
+  ): Promise<Product> => {
+    const formData = new FormData();
+    formData.append('title', payload.title);
+    formData.append('description', payload.description);
+    formData.append('price', String(payload.price));
+  
+    if (payload.location) {
+      formData.append('location', JSON.stringify(payload.location));
+    }
+  
+    if (payload.images && payload.images.length > 0) {
+      payload.images.forEach((img) => {
+        formData.append('images', {
+          uri: img.uri,
+          type: img.type,
+          name: img.name,
+        } as any);
+      });
+    }
+  
+    const res = await axios.put(
+      `${API_BASE_URL}/products/${productId}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  
+    return res.data.data;
+  };

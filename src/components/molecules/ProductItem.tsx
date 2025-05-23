@@ -32,11 +32,19 @@ const ProductItem: React.FC<ProductItemProps> = ({
   const {dark} = useTheme();
   const styles = createStyles(dark);
 
+  const baseURL = 'https://backend-practice.eurisko.me';
+  const isRelative = imageUrl && !imageUrl.startsWith('http');
+  const fullImageUrl = imageUrl
+    ? isRelative
+      ? `${baseURL}${imageUrl}`
+      : imageUrl
+    : 'https://via.placeholder.com/150'; // fallback image
+
   return (
     <TouchableOpacity
       style={styles.card}
       onPress={() => navigation.navigate('ProductDetails', {productId: id})}>
-      <Image source={{uri: imageUrl}} style={styles.image} />
+      <Image source={{uri: fullImageUrl}} style={styles.image} />
       <View style={styles.info}>
         <CustomText size={16} weight="bold" style={styles.title}>
           {title}
@@ -68,6 +76,7 @@ const createStyles = (dark: boolean) =>
       height: width * 0.2,
       borderRadius: width * 0.02,
       marginRight: width * 0.04,
+      backgroundColor: '#ccc',
     },
     info: {
       flex: 1,

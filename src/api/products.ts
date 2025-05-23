@@ -2,6 +2,8 @@ import axios from 'axios';
 import type { Product } from '../navigator/Types';
 
 const API_BASE_URL = 'https://backend-practice.eurisko.me/api';
+export const BASE_URL = API_BASE_URL;
+
 
 // ✅ Create Product
 export const createProduct = async (
@@ -153,4 +155,23 @@ export const deleteProduct = async (
     );
   
     return res.data.data;
+  };
+
+  
+  export const searchProducts = async (
+    token: string,
+    query: string,
+    sortOrder: 'asc' | 'desc',
+  ) => {
+    const response = await axios.get(
+      `${API_BASE_URL}/products/search?query=${encodeURIComponent(query)}&sortBy=price&order=${sortOrder}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+  
+    console.log('🔍 Search:', {query, sortOrder, response: response.data});
+    return response.data.data || response.data;
   };

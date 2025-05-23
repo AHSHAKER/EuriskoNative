@@ -9,12 +9,13 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
+import debounce from 'lodash.debounce';
 import ProductItem from '../../components/molecules/ProductItem';
 import {useTheme} from '../../context/ThemeContext';
 import {useNavigation} from '@react-navigation/native';
 import CustomText from '../../components/atoms/CustomText';
 import AddProductButton from '../../components/atoms/AddProductButton';
-import {getProducts} from '../../api/products';
+import {getProducts, searchProducts} from '../../api/products';
 import type {Product} from '../../navigator/Types';
 import {useAuthStore} from '../../store/AuthStore';
 
@@ -28,8 +29,16 @@ const ProductListScreen = () => {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const debouncedUpdate = useCallback(
+    debounce((text: string) => {
+      setDebouncedSearch(text);
+    }, 500),
+    [],
+  );
 
   const {accessToken} = useAuthStore();
 
@@ -39,21 +48,30 @@ const ProductListScreen = () => {
         if (refreshing) setRefreshing(true);
         else setLoading(true);
 
-        const response = await getProducts(accessToken, {
-          page: pageNumber,
-          limit: 10,
-          search,
-          sortBy: 'price',
-          order: sortOrder,
-        });
+        let fetchedProducts = [];
 
-        const fetchedProducts = response.data;
+        if (debouncedSearch.trim()) {
+          fetchedProducts = await searchProducts(
+            accessToken,
+            debouncedSearch.trim(),
+          );
+          setProducts(fetchedProducts);
+          setHasNextPage(false);
+        } else {
+          const response = await getProducts(accessToken, {
+            page: pageNumber,
+            limit: 10,
+            sortBy: 'price',
+            order: sortOrder,
+          });
 
-        setProducts(prev =>
-          pageNumber === 1 ? fetchedProducts : [...prev, ...fetchedProducts],
-        );
-        setPage(response.pagination.currentPage);
-        setHasNextPage(response.pagination.hasNextPage);
+          fetchedProducts = response.data;
+          setProducts(prev =>
+            pageNumber === 1 ? fetchedProducts : [...prev, ...fetchedProducts],
+          );
+          setPage(response.pagination.currentPage);
+          setHasNextPage(response.pagination.hasNextPage);
+        }
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -61,12 +79,12 @@ const ProductListScreen = () => {
         setRefreshing(false);
       }
     },
-    [search, sortOrder, accessToken],
+    [debouncedSearch, sortOrder, accessToken],
   );
 
   useEffect(() => {
     fetchData(1);
-  }, [search, sortOrder]);
+  }, [debouncedSearch, sortOrder]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -95,8 +113,11 @@ const ProductListScreen = () => {
       style={[styles.container, {backgroundColor: theme.background}]}>
       <View style={styles.searchRow}>
         <TextInput
-          value={search}
-          onChangeText={text => setSearch(text)}
+          value={searchText}
+          onChangeText={text => {
+            setSearchText(text);
+            debouncedUpdate(text);
+          }}
           placeholder="Search products..."
           placeholderTextColor="#999"
           style={[
@@ -104,6 +125,7 @@ const ProductListScreen = () => {
             {backgroundColor: theme.card, color: theme.text},
           ]}
         />
+
         <TouchableOpacity
           onPress={() =>
             setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))

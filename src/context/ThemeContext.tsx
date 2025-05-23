@@ -5,6 +5,8 @@ const lightTheme = {
   text: '#000000',
   header: '#f2f2f2',
   card: '#e0e0e0',
+  border: '#ccc',
+  primary: '#007aff', // iOS blue accent
 };
 
 const darkTheme = {
@@ -12,6 +14,8 @@ const darkTheme = {
   text: '#ffffff',
   header: '#1c1c1e',
   card: '#2c2c2c',
+  border: '#333',
+  primary: '#0a84ff', // brighter blue for dark
 };
 
 const ThemeContext = createContext({

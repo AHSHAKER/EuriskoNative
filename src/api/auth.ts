@@ -26,3 +26,47 @@ export const signUp = async (data: {
 
   return response.data;
 };
+
+export const login = async (data: { email: string; password: string }) => {
+  const response = await axios.post(`${BASE_URL}/auth/login`, {
+    email: data.email,
+    password: data.password,
+  });
+  return response.data;
+};
+
+
+export const getUserProfile = async (token: string) => {
+  const response = await axios.get(`${BASE_URL}/user/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
+
+// api/auth.ts
+export const resendOTP = async (email: string) => {
+  const response = await axios.post(
+    `${BASE_URL}/auth/resend-verification-otp`,
+    { email }, // send JSON, not FormData
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+export const verifyEmailOtp = async (email: string, otp: string) => {
+  console.log('Sending JSON payload:', { email, otp });
+
+  const response = await axios.post(`${BASE_URL}/auth/verify-otp`, {
+    email,
+    otp,
+  });
+
+  return response.data;
+};

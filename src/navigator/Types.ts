@@ -1,8 +1,7 @@
 export type AuthStackParamList = {
     SignUp: undefined;
     Login: undefined;
-    OTP: { from: string };
-    Done: { from: string };
+    OTP: { from: 'Login' | 'SignUp'; email: string };
   };
   
 export type MainStackParamList = {

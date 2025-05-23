@@ -14,7 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {AuthStackParamList} from '../../navigator/Types';
 import CustomText from '../atoms/CustomText';
-import {login, getUserProfile, resendOTP} from '../../api/auth';
+import {login, resendOTP} from '../../api/auth';
 import {useAuthStore} from '../../store/AuthStore';
 
 const {width} = Dimensions.get('window');
@@ -38,32 +38,25 @@ const LoginForm = () => {
       const res = await login({email: data.email, password: data.password});
       console.log('Login response:', res);
 
-      // ✅ If login succeeds, user is verified
-      const token = res.data?.accessToken;
-      if (!token) throw new Error('Token missing from login response');
-      console.log('Token received:', token);
-      useAuthStore.getState().login(token);
+      const {accessToken, refreshToken} = res.data;
+      if (!accessToken || !refreshToken) {
+        throw new Error('Tokens missing from login response');
+      }
+
+      console.log('Tokens received:', {accessToken, refreshToken});
+      useAuthStore.getState().login({accessToken, refreshToken}); // ✅ Fixed
     } catch (err: any) {
-      console.log('Login error:', err);
       const status = err?.response?.status;
       const message =
         err?.response?.data?.error?.message ||
         'Login failed. Please try again.';
 
-      // ❗️Handle unverified email
       if (status === 403 && message.toLowerCase().includes('verify')) {
-        console.log('403 detected — user needs to verify email');
         try {
-          console.log('Attempting to resend OTP...');
           await resendOTP(data.email);
-          console.log('OTP resent successfully. Navigating to OTP screen...');
           navigation.navigate('OTP', {from: 'Login', email: data.email});
           return;
-        } catch (otpErr: any) {
-          console.log(
-            'Failed to resend OTP:',
-            otpErr?.response?.data || otpErr.message,
-          );
+        } catch {
           Alert.alert('Error', 'Could not resend OTP.');
           return;
         }

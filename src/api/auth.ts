@@ -35,22 +35,10 @@ export const login = async (data: { email: string; password: string }) => {
   return response.data;
 };
 
-
-export const getUserProfile = async (token: string) => {
-  const response = await axios.get(`${BASE_URL}/user/profile`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-
-// api/auth.ts
 export const resendOTP = async (email: string) => {
   const response = await axios.post(
     `${BASE_URL}/auth/resend-verification-otp`,
-    { email }, // send JSON, not FormData
+    { email },
     {
       headers: {
         'Content-Type': 'application/json',

@@ -7,4 +7,6 @@ export type AuthStackParamList = {
 export type MainStackParamList = {
   ProductList: undefined;
   ProductDetails: { productId: String };
+  AddProduct: undefined;
 };
+

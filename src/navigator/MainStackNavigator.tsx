@@ -5,6 +5,7 @@ import {useTheme} from '../context/ThemeContext';
 import ProductListScreen from '../screens/AppScreens/ProductListScreen';
 import HeaderTitle from '../components/atoms/HeaderTitle';
 import ProductDetailsScreen from '../screens/AppScreens/ProductDetailsScreen';
+import AddProductScreen from '../screens/AppScreens/AddProductScreen';
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
 
@@ -27,6 +28,11 @@ function MainStackNavigator() {
       <MainStack.Screen
         name="ProductDetails"
         component={ProductDetailsScreen}
+        options={{headerShown: false}}
+      />
+      <MainStack.Screen
+        name="AddProduct"
+        component={AddProductScreen}
         options={{headerShown: false}}
       />
     </MainStack.Navigator>

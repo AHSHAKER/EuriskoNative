@@ -11,6 +11,7 @@ import {products} from '../../data/Products';
 import {useTheme} from '../../context/ThemeContext';
 import {useNavigation} from '@react-navigation/native';
 import CustomText from '../../components/atoms/CustomText';
+import AddProductButton from '../../components/atoms/AddProductButton';
 
 const {width, height} = Dimensions.get('window');
 
@@ -46,6 +47,7 @@ const ProductListScreen = () => {
         )}
         contentContainerStyle={{paddingBottom: height * 0.02}}
       />
+      <AddProductButton />
     </SafeAreaView>
   );
 };

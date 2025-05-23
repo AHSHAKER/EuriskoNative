@@ -56,19 +56,33 @@ const AddProductForm = () => {
   };
 
   const onPickImage = async () => {
+    console.log('Picking images...');
     const hasPermission = await requestGalleryPermission();
     if (!hasPermission) {
+      console.log('Permission denied');
       Alert.alert('Permission denied', 'Cannot access gallery.');
       return;
     }
 
     launchImageLibrary({mediaType: 'photo', selectionLimit: 5}, res => {
       if (res.assets) {
-        const imageUris = res.assets.map(a => a.uri);
-        setLocalImages(res.assets);
+        const newAssets = res.assets.slice(0, 5 - localImages.length); // restrict to max 5
+        const updatedImages = [...localImages, ...newAssets].slice(0, 5); // ensure max of 5
+        const imageUris = updatedImages.map(img => img.uri);
+
+        console.log('Selected images:', updatedImages);
+        setLocalImages(updatedImages);
         setValue('images', imageUris as string[]);
+        console.log('Updated images:', imageUris);
       }
     });
+  };
+
+  const removeImage = (index: number) => {
+    const updatedImages = [...localImages];
+    updatedImages.splice(index, 1);
+    setLocalImages(updatedImages);
+    setValue('images', updatedImages.map(img => img.uri) as string[]);
   };
 
   const onSubmit = async (form: ProductFormData) => {
@@ -170,11 +184,9 @@ const AddProductForm = () => {
       {localImages.length > 0 && (
         <ScrollView horizontal style={styles.imagePreviewContainer}>
           {localImages.map((img, i) => (
-            <Image
-              key={i}
-              source={{uri: img.uri}}
-              style={styles.imageThumbnail}
-            />
+            <TouchableOpacity key={i} onPress={() => removeImage(i)}>
+              <Image source={{uri: img.uri}} style={styles.imageThumbnail} />
+            </TouchableOpacity>
           ))}
         </ScrollView>
       )}

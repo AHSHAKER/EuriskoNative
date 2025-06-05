@@ -19,6 +19,7 @@ import {getProducts, searchProducts} from '../../api/products';
 import type {Product} from '../../navigator/Types';
 import {useAuthStore} from '../../store/AuthStore';
 import LogoutButton from '../../components/atoms/LogoutButton';
+import ProductSkeleton from '../../components/molecules/ProductSkeleton';
 
 const {width, height} = Dimensions.get('window');
 
@@ -33,6 +34,7 @@ const ProductListScreen = () => {
   const [searchText, setSearchText] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [fetchError, setFetchError] = useState(false);
 
   const debouncedUpdate = useCallback(
     debounce((text: string) => {
@@ -46,6 +48,7 @@ const ProductListScreen = () => {
   const fetchData = useCallback(
     async (pageNumber = 1, refreshing = false) => {
       try {
+        setFetchError(false);
         if (refreshing) setRefreshing(true);
         else setLoading(true);
 
@@ -75,6 +78,7 @@ const ProductListScreen = () => {
         }
       } catch (error) {
         console.error('Error fetching products:', error);
+        setFetchError(true); // Set error flag on failure
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -143,26 +147,50 @@ const ProductListScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={products}
-        keyExtractor={(item: Product) => item._id}
-        renderItem={({item}: {item: Product}) => (
-          <ProductItem
-            id={item._id}
-            title={item.title}
-            price={item.price}
-            imageUrl={item.images?.[0]?.url || ''}
-          />
-        )}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-        ListFooterComponent={
-          loading && !refreshing ? <ActivityIndicator /> : null
-        }
-        contentContainerStyle={{paddingBottom: height * 0.02}}
-      />
+      {loading && products.length === 0 ? (
+        <>
+          {Array.from({length: 6}).map((_, i) => (
+            <ProductSkeleton key={i} />
+          ))}
+          {fetchError && (
+            <TouchableOpacity
+              onPress={() => fetchData(1)}
+              style={{
+                marginTop: 20,
+                alignSelf: 'center',
+                padding: 12,
+                borderRadius: 8,
+                backgroundColor: '#f44',
+              }}>
+              <CustomText size={16} weight="bold" style={{color: '#fff'}}>
+                Retry
+              </CustomText>
+            </TouchableOpacity>
+          )}
+        </>
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item: Product) => item._id}
+          renderItem={({item}: {item: Product}) => (
+            <ProductItem
+              id={item._id}
+              title={item.title}
+              price={item.price}
+              imageUrl={item.images?.[0]?.url || ''}
+            />
+          )}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          ListFooterComponent={
+            loading && !refreshing ? <ActivityIndicator /> : null
+          }
+          contentContainerStyle={{paddingBottom: height * 0.02}}
+        />
+      )}
+
       <AddProductButton />
     </SafeAreaView>
   );

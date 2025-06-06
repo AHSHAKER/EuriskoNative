@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import {
   View,
   Text,
@@ -51,7 +51,13 @@ export default function ProfileScreen() {
     loadProfile();
   }, [loadProfile]);
 
-  const handleImagePick = async () => {
+  const avatarSource = useMemo(() => {
+    if (profileImage?.uri) return {uri: profileImage.uri};
+    if (profileImageUrl) return {uri: profileImageUrl};
+    return {uri: 'https://via.placeholder.com/100x100.png?text=Avatar'};
+  }, [profileImage, profileImageUrl]);
+
+  const handleImagePick = useCallback(async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
       quality: 0.8,
@@ -65,9 +71,9 @@ export default function ProfileScreen() {
         name: asset.fileName || 'profile.jpg',
       });
     }
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     setSaving(true);
     try {
       await updateUserProfile(accessToken, {
@@ -83,7 +89,7 @@ export default function ProfileScreen() {
     } finally {
       setSaving(false);
     }
-  };
+  }, [accessToken, firstName, lastName, profileImage, loadProfile]);
 
   if (loading) return <ActivityIndicator style={{marginTop: 50}} />;
 
@@ -113,16 +119,7 @@ export default function ProfileScreen() {
       <TouchableOpacity
         onPress={handleImagePick}
         style={styles.avatarContainer}>
-        <Image
-          source={
-            profileImage
-              ? {uri: profileImage.uri}
-              : profileImageUrl
-              ? {uri: profileImageUrl}
-              : {uri: 'https://via.placeholder.com/100x100.png?text=Avatar'}
-          }
-          style={styles.avatar}
-        />
+        <Image source={avatarSource} style={styles.avatar} />
         <Text style={{color: theme.text, marginTop: 8}}>
           Change Profile Picture
         </Text>

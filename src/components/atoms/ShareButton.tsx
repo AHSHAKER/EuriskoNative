@@ -1,12 +1,23 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
+import {TouchableOpacity, StyleSheet, Dimensions, Share} from 'react-native';
 import CustomText from '../atoms/CustomText';
 
 const {width} = Dimensions.get('window');
 
-const ShareButton = () => {
+const ShareButton = ({productId}) => {
+  const handleShare = async () => {
+    const shareUrl = `https://backend-practice.eurisko.me/products/${productId}`;
+    try {
+      await Share.share({
+        message: `Check out this product: ${shareUrl}`,
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity style={styles.button} onPress={handleShare}>
       <CustomText weight="bold" size={14} style={styles.text}>
         Share
       </CustomText>

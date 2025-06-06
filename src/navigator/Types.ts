@@ -9,6 +9,7 @@ export type MainStackParamList = {
   ProductDetails: { productId: String };
   AddProduct: undefined;
   EditProduct: { productId: String };
+  Cart: undefined;
 };
 
 export type Product = {

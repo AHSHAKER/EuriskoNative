@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import {
   View,
   Image,
@@ -23,38 +23,41 @@ import EditProductButton from '../../components/atoms/EditProductButton';
 import DeleteProductButton from '../../components/atoms/DeleteProductButton';
 import {getUserIdFromToken} from '../../utils/UserIdHelper';
 import MapView, {Marker} from 'react-native-maps';
+import AddToCartButton from '../../components/atoms/AddToCart';
+import {useCartStore} from '../../store/CartStore';
+import ShareButton from '../../components/atoms/ShareButton';
 
 const {width, height} = Dimensions.get('window');
 
 type ProductDetailsRouteProp = RouteProp<MainStackParamList, 'ProductDetails'>;
 
 const ProductDetailsScreen = () => {
-  const accessToken = useAuthStore(state => state.accessToken);
   const {productId} = useRoute<ProductDetailsRouteProp>().params;
   const {dark} = useTheme();
-  const styles = createStyles(dark);
-  const [product, setProduct] = useState<any>(null);
+  const styles = useMemo(() => createStyles(dark), [dark]);
+  const accessToken = useAuthStore(state => state.accessToken);
+  const addToCart = useCartStore(state => state.addToCart);
   const userId = getUserIdFromToken(accessToken);
+
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         if (!accessToken) return;
-
-        const product = await getProductById(accessToken, productId);
-        setProduct(product);
+        const fetchedProduct = await getProductById(accessToken, productId);
+        setProduct(fetchedProduct);
       } catch (error) {
         console.error('Failed to fetch product:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProduct();
   }, [accessToken, productId]);
 
-  const handleLongPressImage = async (relativeUrl: string) => {
+  const handleLongPressImage = useCallback(async (relativeUrl: string) => {
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
@@ -67,14 +70,13 @@ const ProductDetailsScreen = () => {
           );
         }
       }
-
       const fullUrl = `https://backend-practice.eurisko.me${relativeUrl}`;
       await downloadImageWithAxios(fullUrl);
     } catch (error) {
       console.error('Download failed:', error);
       Alert.alert('Error', 'Image download failed.');
     }
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -126,10 +128,10 @@ const ProductDetailsScreen = () => {
         </CustomText>
 
         <View style={styles.ownerContainer}>
-          <CustomText size={14} weight="bold">
+          <CustomText size={14} weight="bold" style={styles.ownerLabel}>
             Owner: {product.user?.name}
           </CustomText>
-          <CustomText size={14} style={{color: 'blue'}}>
+          <CustomText size={14} style={styles.ownerEmail}>
             {product.user?.email}
           </CustomText>
         </View>
@@ -179,16 +181,15 @@ const ProductDetailsScreen = () => {
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.disabledButton} activeOpacity={1}>
-          <CustomText size={14} weight="bold" style={styles.disabledText}>
-            Share
-          </CustomText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.disabledButton} activeOpacity={1}>
-          <CustomText size={14} weight="bold" style={styles.disabledText}>
-            Add to Cart
-          </CustomText>
-        </TouchableOpacity>
+        <ShareButton productId={productId} />
+        <AddToCartButton
+          buttonStyle={styles.activeButton}
+          textStyle={styles.activeText}
+          onPress={() => {
+            addToCart(product._id);
+            Alert.alert('Success', 'Product added to cart!');
+          }}
+        />
       </View>
     </View>
   );
@@ -227,26 +228,36 @@ const createStyles = (dark: boolean) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingVertical: 10,
-      paddingHorizontal: '2.5%', // 2.5% margin on left and right
+      paddingHorizontal: '2.5%',
       borderTopWidth: 1,
       borderColor: dark ? '#444' : '#eee',
       backgroundColor: dark ? '#222' : '#fff',
-    },
-    disabledButton: {
-      width: '49%',
-      backgroundColor: dark ? '#333' : '#ccc',
-      paddingVertical: 12,
-      borderRadius: 8,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    disabledText: {
-      color: '#888',
     },
     centered: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    activeButton: {
+      width: '49%',
+      backgroundColor: '#007aff',
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    activeText: {
+      color: '#fff',
+    },
+    ownerLabel: {
+      color: dark ? '#fff' : '#000',
+    },
+    ownerEmail: {
+      color: dark ? '#66aaff' : '#007aff', // bluish in both themes
     },
   });

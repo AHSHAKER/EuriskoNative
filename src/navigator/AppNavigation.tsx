@@ -9,7 +9,7 @@ const linking = {
   config: {
     screens: {
       ProductList: 'products',
-      ProductDetails: 'product/:id',
+      ProductDetails: 'product/:productId',
     },
   },
 };

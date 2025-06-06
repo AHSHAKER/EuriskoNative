@@ -25,6 +25,7 @@ import {getUserIdFromToken} from '../../utils/UserIdHelper';
 import MapView, {Marker} from 'react-native-maps';
 import AddToCartButton from '../../components/atoms/AddToCart';
 import {useCartStore} from '../../store/CartStore';
+import ShareButton from '../../components/atoms/ShareButton';
 
 const {width, height} = Dimensions.get('window');
 
@@ -182,11 +183,7 @@ const ProductDetailsScreen = () => {
       </ScrollView>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.disabledButton} activeOpacity={1}>
-          <CustomText size={14} weight="bold" style={styles.disabledText}>
-            Share
-          </CustomText>
-        </TouchableOpacity>
+        <ShareButton productId={productId} />
 
         <AddToCartButton
           buttonStyle={styles.activeButton}

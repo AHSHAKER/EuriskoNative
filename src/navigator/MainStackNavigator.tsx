@@ -24,22 +24,23 @@ function MainStackNavigator() {
           },
           headerTintColor: theme.text,
           headerTitle: () => <HeaderTitle />,
+          animation: 'fade',
         }}
       />
       <MainStack.Screen
         name="ProductDetails"
         component={ProductDetailsScreen}
-        options={{headerShown: false}}
+        options={{headerShown: false, animation: 'slide_from_right'}}
       />
       <MainStack.Screen
         name="EditProduct"
         component={EditProductScreen}
-        options={{headerShown: false}}
+        options={{headerShown: false, animation: 'slide_from_bottom'}}
       />
       <MainStack.Screen
         name="AddProduct"
         component={AddProductScreen}
-        options={{headerShown: false}}
+        options={{headerShown: false, animation: 'slide_from_bottom'}}
       />
     </MainStack.Navigator>
   );

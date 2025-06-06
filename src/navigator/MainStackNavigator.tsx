@@ -7,6 +7,7 @@ import HeaderTitle from '../components/atoms/HeaderTitle';
 import ProductDetailsScreen from '../screens/AppScreens/ProductDetailsScreen';
 import AddProductScreen from '../screens/AppScreens/AddProductScreen';
 import EditProductScreen from '../screens/AppScreens/EditProductScreen';
+import CartScreen from '../screens/AppScreens/CartScreen';
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
 
@@ -41,6 +42,19 @@ function MainStackNavigator() {
         name="AddProduct"
         component={AddProductScreen}
         options={{headerShown: false, animation: 'slide_from_bottom'}}
+      />
+      <MainStack.Screen
+        name="Cart"
+        component={CartScreen}
+        options={{
+          headerShown: true,
+          animation: 'slide_from_right',
+          headerStyle: {
+            backgroundColor: theme.header,
+          },
+          headerTintColor: theme.text,
+          title: 'My Cart',
+        }}
       />
     </MainStack.Navigator>
   );

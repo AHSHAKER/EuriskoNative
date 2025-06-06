@@ -1,13 +1,17 @@
 import React from 'react';
-import {TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
+import {TouchableOpacity, StyleProp, ViewStyle, TextStyle} from 'react-native';
 import CustomText from '../atoms/CustomText';
 
-const {width} = Dimensions.get('window');
+interface Props {
+  onPress?: () => void;
+  buttonStyle?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+}
 
-const AddToCartButton = () => {
+const AddToCartButton = ({onPress, buttonStyle, textStyle}: Props) => {
   return (
-    <TouchableOpacity style={styles.button}>
-      <CustomText weight="bold" size={14} style={styles.text}>
+    <TouchableOpacity style={buttonStyle} onPress={onPress}>
+      <CustomText weight="bold" size={14} style={textStyle}>
         Add to Cart
       </CustomText>
     </TouchableOpacity>
@@ -15,19 +19,3 @@ const AddToCartButton = () => {
 };
 
 export default AddToCartButton;
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#007aff',
-    borderRadius: width * 0.02,
-    padding: width * 0.02,
-    justifyContent: 'center',
-    flex: 1,
-  },
-  text: {
-    marginLeft: 6,
-    color: '#fff',
-  },
-});

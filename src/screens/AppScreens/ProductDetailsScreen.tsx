@@ -23,6 +23,8 @@ import EditProductButton from '../../components/atoms/EditProductButton';
 import DeleteProductButton from '../../components/atoms/DeleteProductButton';
 import {getUserIdFromToken} from '../../utils/UserIdHelper';
 import MapView, {Marker} from 'react-native-maps';
+import AddToCartButton from '../../components/atoms/AddToCart';
+import {useCartStore} from '../../store/CartStore';
 
 const {width, height} = Dimensions.get('window');
 
@@ -31,6 +33,7 @@ type ProductDetailsRouteProp = RouteProp<MainStackParamList, 'ProductDetails'>;
 const ProductDetailsScreen = () => {
   const accessToken = useAuthStore(state => state.accessToken);
   const {productId} = useRoute<ProductDetailsRouteProp>().params;
+  const addToCart = useCartStore(state => state.addToCart);
   const {dark} = useTheme();
   const styles = createStyles(dark);
   const [product, setProduct] = useState<any>(null);
@@ -184,11 +187,15 @@ const ProductDetailsScreen = () => {
             Share
           </CustomText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.disabledButton} activeOpacity={1}>
-          <CustomText size={14} weight="bold" style={styles.disabledText}>
-            Add to Cart
-          </CustomText>
-        </TouchableOpacity>
+
+        <AddToCartButton
+          buttonStyle={styles.activeButton}
+          textStyle={styles.activeText}
+          onPress={() => {
+            addToCart(product._id); // Add product ID to Zustand cart
+            Alert.alert('Success', 'Product added to cart!');
+          }}
+        />
       </View>
     </View>
   );
@@ -248,5 +255,21 @@ const createStyles = (dark: boolean) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    activeButton: {
+      width: '49%',
+      backgroundColor: '#007aff',
+      paddingVertical: 12,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: '#000',
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    activeText: {
+      color: '#fff',
     },
   });

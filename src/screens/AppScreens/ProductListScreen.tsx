@@ -20,6 +20,7 @@ import type {Product} from '../../navigator/Types';
 import {useAuthStore} from '../../store/AuthStore';
 import LogoutButton from '../../components/atoms/LogoutButton';
 import ProductSkeleton from '../../components/molecules/ProductSkeleton';
+import CartButton from '../../components/atoms/CartButton';
 
 const {width, height} = Dimensions.get('window');
 
@@ -100,6 +101,10 @@ const ProductListScreen = () => {
             style={[styles.headerButton, {backgroundColor: theme.card}]}>
             <CustomText size={25}>🌓</CustomText>
           </TouchableOpacity>
+          <CartButton
+            style={[styles.headerButton, {backgroundColor: theme.card}]}
+            textStyle={{fontSize: 20}}
+          />
           <LogoutButton
             style={[styles.headerButton, {backgroundColor: theme.card}]}
           />
@@ -211,7 +216,7 @@ const styles = StyleSheet.create({
     maxWidth: width * 0.45, // Prevents overflow beyond screen
   },
   headerButton: {
-    width: width * 0.2,
+    width: width * 0.125,
     height: width * 0.1 + width * 0.04, // optional, visually consistent
     borderRadius: width * 0.05,
     alignItems: 'center',

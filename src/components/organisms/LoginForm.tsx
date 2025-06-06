@@ -96,7 +96,7 @@ const LoginForm = () => {
       />
       {errors.password && (
         <CustomText size={12} style={styles.error}>
-          {errors.password.message}123
+          {errors.password.message}
         </CustomText>
       )}
 

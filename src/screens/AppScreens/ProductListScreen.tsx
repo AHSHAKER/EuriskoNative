@@ -37,14 +37,14 @@ const ProductListScreen = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [fetchError, setFetchError] = useState(false);
 
+  const {accessToken} = useAuthStore();
+
   const debouncedUpdate = useCallback(
     debounce((text: string) => {
       setDebouncedSearch(text);
     }, 500),
     [],
   );
-
-  const {accessToken} = useAuthStore();
 
   const fetchData = useCallback(
     async (pageNumber = 1, refreshing = false) => {
@@ -79,7 +79,7 @@ const ProductListScreen = () => {
         }
       } catch (error) {
         console.error('Error fetching products:', error);
-        setFetchError(true); // Set error flag on failure
+        setFetchError(true);
       } finally {
         setLoading(false);
         setRefreshing(false);
@@ -113,15 +113,27 @@ const ProductListScreen = () => {
     });
   }, [navigation, toggleTheme, theme]);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     if (hasNextPage && !loading) {
       fetchData(page + 1);
     }
-  };
+  }, [hasNextPage, loading, page, fetchData]);
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     fetchData(1, true);
-  };
+  }, [fetchData]);
+
+  const renderProductItem = useCallback(
+    ({item}: {item: Product}) => (
+      <ProductItem
+        id={item._id}
+        title={item.title}
+        price={item.price}
+        imageUrl={item.images?.[0]?.url || ''}
+      />
+    ),
+    [],
+  );
 
   return (
     <SafeAreaView
@@ -140,7 +152,6 @@ const ProductListScreen = () => {
             {backgroundColor: theme.card, color: theme.text},
           ]}
         />
-
         <TouchableOpacity
           onPress={() =>
             setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'))
@@ -177,14 +188,7 @@ const ProductListScreen = () => {
         <FlatList
           data={products}
           keyExtractor={(item: Product) => item._id}
-          renderItem={({item}: {item: Product}) => (
-            <ProductItem
-              id={item._id}
-              title={item.title}
-              price={item.price}
-              imageUrl={item.images?.[0]?.url || ''}
-            />
-          )}
+          renderItem={renderProductItem}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           refreshing={refreshing}
@@ -212,12 +216,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingRight: width * 0.02,
-    columnGap: width * 0.02, // Works in RN >= 0.71, use marginRight fallback below if needed
-    maxWidth: width * 0.45, // Prevents overflow beyond screen
+    columnGap: width * 0.02,
+    maxWidth: width * 0.45,
   },
   headerButton: {
     width: width * 0.125,
-    height: width * 0.1 + width * 0.04, // optional, visually consistent
+    height: width * 0.1 + width * 0.04,
     borderRadius: width * 0.05,
     alignItems: 'center',
     justifyContent: 'center',

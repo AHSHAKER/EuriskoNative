@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import {
   View,
   Image,
@@ -32,33 +32,32 @@ const {width, height} = Dimensions.get('window');
 type ProductDetailsRouteProp = RouteProp<MainStackParamList, 'ProductDetails'>;
 
 const ProductDetailsScreen = () => {
-  const accessToken = useAuthStore(state => state.accessToken);
   const {productId} = useRoute<ProductDetailsRouteProp>().params;
-  const addToCart = useCartStore(state => state.addToCart);
   const {dark} = useTheme();
-  const styles = createStyles(dark);
-  const [product, setProduct] = useState<any>(null);
+  const styles = useMemo(() => createStyles(dark), [dark]);
+  const accessToken = useAuthStore(state => state.accessToken);
+  const addToCart = useCartStore(state => state.addToCart);
   const userId = getUserIdFromToken(accessToken);
+
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         if (!accessToken) return;
-
-        const product = await getProductById(accessToken, productId);
-        setProduct(product);
+        const fetchedProduct = await getProductById(accessToken, productId);
+        setProduct(fetchedProduct);
       } catch (error) {
         console.error('Failed to fetch product:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProduct();
   }, [accessToken, productId]);
 
-  const handleLongPressImage = async (relativeUrl: string) => {
+  const handleLongPressImage = useCallback(async (relativeUrl: string) => {
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.request(
@@ -71,14 +70,13 @@ const ProductDetailsScreen = () => {
           );
         }
       }
-
       const fullUrl = `https://backend-practice.eurisko.me${relativeUrl}`;
       await downloadImageWithAxios(fullUrl);
     } catch (error) {
       console.error('Download failed:', error);
       Alert.alert('Error', 'Image download failed.');
     }
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -184,12 +182,11 @@ const ProductDetailsScreen = () => {
 
       <View style={styles.buttonContainer}>
         <ShareButton productId={productId} />
-
         <AddToCartButton
           buttonStyle={styles.activeButton}
           textStyle={styles.activeText}
           onPress={() => {
-            addToCart(product._id); // Add product ID to Zustand cart
+            addToCart(product._id);
             Alert.alert('Success', 'Product added to cart!');
           }}
         />
@@ -231,22 +228,10 @@ const createStyles = (dark: boolean) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingVertical: 10,
-      paddingHorizontal: '2.5%', // 2.5% margin on left and right
+      paddingHorizontal: '2.5%',
       borderTopWidth: 1,
       borderColor: dark ? '#444' : '#eee',
       backgroundColor: dark ? '#222' : '#fff',
-    },
-    disabledButton: {
-      width: '49%',
-      backgroundColor: dark ? '#333' : '#ccc',
-      paddingVertical: 12,
-      borderRadius: 8,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    disabledText: {
-      color: '#888',
     },
     centered: {
       flex: 1,

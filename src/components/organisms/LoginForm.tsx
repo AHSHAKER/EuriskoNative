@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   TextInput,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -22,6 +23,7 @@ type Navigation = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 const LoginForm = () => {
   const navigation = useNavigation<Navigation>();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -34,17 +36,15 @@ const LoginForm = () => {
 
   const onSubmit = async (data: LoginData) => {
     try {
-      console.log('Attempting to log in with:', data);
+      setLoading(true);
       const res = await login({email: data.email, password: data.password});
-      console.log('Login response:', res);
-
       const {accessToken, refreshToken} = res.data;
+
       if (!accessToken || !refreshToken) {
         throw new Error('Tokens missing from login response');
       }
 
-      console.log('Tokens received:', {accessToken, refreshToken});
-      useAuthStore.getState().login({accessToken, refreshToken}); // ✅ Fixed
+      useAuthStore.getState().login({accessToken, refreshToken});
     } catch (err: any) {
       const status = err?.response?.status;
       const message =
@@ -63,6 +63,8 @@ const LoginForm = () => {
       }
 
       Alert.alert('Login Error', message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,10 +102,17 @@ const LoginForm = () => {
         </CustomText>
       )}
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-        <CustomText size={16} weight="bold" style={styles.buttonText}>
-          Log In
-        </CustomText>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleSubmit(onSubmit)}
+        disabled={loading}>
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <CustomText size={16} weight="bold" style={styles.buttonText}>
+            Log In
+          </CustomText>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -139,5 +148,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
 });

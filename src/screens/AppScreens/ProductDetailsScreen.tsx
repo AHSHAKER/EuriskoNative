@@ -128,10 +128,10 @@ const ProductDetailsScreen = () => {
         </CustomText>
 
         <View style={styles.ownerContainer}>
-          <CustomText size={14} weight="bold">
+          <CustomText size={14} weight="bold" style={styles.ownerLabel}>
             Owner: {product.user?.name}
           </CustomText>
-          <CustomText size={14} style={{color: 'blue'}}>
+          <CustomText size={14} style={styles.ownerEmail}>
             {product.user?.email}
           </CustomText>
         </View>
@@ -253,5 +253,11 @@ const createStyles = (dark: boolean) =>
     },
     activeText: {
       color: '#fff',
+    },
+    ownerLabel: {
+      color: dark ? '#fff' : '#000',
+    },
+    ownerEmail: {
+      color: dark ? '#66aaff' : '#007aff', // bluish in both themes
     },
   });

@@ -8,8 +8,13 @@ const linking = {
   prefixes: ['hzero://'],
   config: {
     screens: {
-      ProductList: 'products',
-      ProductDetails: 'product/:productId',
+      Products: {
+        screens: {
+          ProductList: 'products',
+          ProductDetails: 'product/:productId',
+        },
+      },
+      Profile: 'profile',
     },
   },
 };
